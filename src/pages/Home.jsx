@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   HiAcademicCap,
   HiBookOpen,
@@ -12,12 +12,12 @@ import {
   HiArrowRight,
   HiFire,
   HiLightBulb,
-} from 'react-icons/hi'
-import { fetchMCQs } from '../services/api.js'
-import LoadingSpinner from '../components/LoadingSpinner.jsx'
+} from 'react-icons/hi';
+import { fetchMCQs } from '../services/api.js';
+import LoadingSpinner from '../components/LoadingSpinner.jsx';
 
 const categories = [
-  { id: 1, name: 'সরকারি চাকরি', icon: HiAcademicCap, color: 'from-blue-500 to-blue-600', count: '১২০+' },
+  { id: 1, name: 'সরকারি চাকরি', icon: HiAcademicCap, color: 'from-blue-500 to-blue-600', count: '৬২০+' },
   { id: 2, name: 'ব্যাংক চাকরি', icon: HiTrendingUp, color: 'from-emerald-500 to-emerald-600', count: '৮৫+' },
   { id: 3, name: 'BCS প্রস্তুতি', icon: HiStar, color: 'from-amber-500 to-orange-500', count: '২০০+' },
   { id: 4, name: 'প্রাইভেট চাকরি', icon: HiUsers, color: 'from-purple-500 to-pink-500', count: '৯৫+' },
@@ -26,7 +26,7 @@ const categories = [
 const subjects = [
   { id: 1, name: 'বাংলা সাহিত্য', icon: '📖', total: 450, color: 'bg-rose-50 text-rose-600' },
   { id: 2, name: 'ইংরেজি', icon: '🔤', total: 380, color: 'bg-blue-50 text-blue-600' },
-  { id: 3, name: 'গণিত', icon: '🔢', total: 520, color: 'bg-emerald-50 text-emerald-600' },
+  { id: 3, name: 'গণিত', icon: '📊', total: 520, color: 'bg-emerald-50 text-emerald-600' },
   { id: 4, name: 'সাধারণ জ্ঞান', icon: '🌍', total: 600, color: 'bg-amber-50 text-amber-600' },
   { id: 5, name: 'বিজ্ঞান', icon: '🔬', total: 310, color: 'bg-purple-50 text-purple-600' },
   { id: 6, name: 'আইসিটি', icon: '💻', total: 220, color: 'bg-cyan-50 text-cyan-600' },
@@ -92,7 +92,6 @@ export default function Home() {
 
   return (
     <div className="page-content animate-fade-in">
-      {/* Hero Banner */}
       <section className="gradient-header -mx-4 -mt-4 px-4 pt-8 pb-10 rounded-b-3xl mb-6 relative overflow-hidden">
         <div className="absolute top-0 right-0 w-40 h-40 bg-white/10 rounded-full -translate-y-12 translate-x-12" />
         <div className="absolute bottom-0 left-0 w-32 h-32 bg-white/5 rounded-full translate-y-8 -translate-x-8" />
@@ -107,7 +106,7 @@ export default function Home() {
             চাকরি প্রস্তুতি এখন আরও সহজ
           </h1>
           <p className="text-sm text-brand-100 mb-5 max-w-xs">
-            MCQ ও লিখিত পরীক্ষার অনুশীলন করুন, ফলাফল দেখুন — সবকিছু এক অ্যাপে
+            MCQ ও লিখিত পরীক্ষার অনুশীলন করুন, ফলাফল দেখুন, সবকিছু এক আপে
           </p>
           <div className="flex gap-3">
             <button
@@ -128,7 +127,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Categories */}
       <section className="mb-6">
         <h2 className="section-title">
           <HiLightBulb className="text-brand-500" />
@@ -141,7 +139,7 @@ export default function Home() {
               <div
                 key={cat.id}
                 onClick={() => navigate('/mcq')}
-                className={`card card-hover p-4 cursor-pointer animate-slide-up`}
+                className="card card-hover p-4 cursor-pointer animate-slide-up"
                 style={{ animationDelay: `${idx * 80}ms` }}
               >
                 <div className={`w-11 h-11 rounded-xl bg-gradient-to-br ${cat.color} flex items-center justify-center mb-3 shadow-sm`}>
@@ -155,7 +153,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Subjects */}
       <section className="mb-6">
         <div className="flex items-center justify-between mb-3">
           <h2 className="section-title mb-0">
@@ -183,7 +180,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Statistics */}
       <section className="mb-6">
         <h2 className="section-title">
           <HiTrendingUp className="text-brand-500" />
@@ -198,7 +194,7 @@ export default function Home() {
                 className="card p-4 animate-slide-up"
                 style={{ animationDelay: `${idx * 80}ms` }}
               >
-                <Icon className={`text-2xl ${stat.color} mb-2" />
+                <Icon className={`text-2xl ${stat.color} mb-2`} />
                 <p className="text-lg font-bold text-slate-800">{stat.value}</p>
                 <p className="text-xs text-slate-400">{stat.label}</p>
               </div>
@@ -207,7 +203,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Sample MCQ */}
       <section className="mb-4">
         <h2 className="section-title">
           <HiClipboardCheck className="text-brand-500" />
@@ -233,14 +228,7 @@ export default function Home() {
                   onClick={() => handleOptionClick(idx)}
                   className={"w-full text-left p-3 rounded-xl border-2 transition-all duration-200 flex items-center gap-3 " + getOptionClass(idx)}
                 >
-                  <span className={
-                  "w-7 h-7 rounded-lg flex items-center justify-center text-sm font-bold " +
-                  (showAnswer && idx === sampleMCQ.correctAnswer
-                    ? "bg-emerald-500 text-white"
-                    : showAnswer && idx === selectedOption
-                    ? "bg-red-500 text-white"
-                    : "bg-slate-100 text-slate-600")
-                }>
+                  <span className={"w-7 h-7 rounded-lg flex items-center justify-center text-sm font-bold " + (showAnswer && idx === sampleMCQ.correctAnswer ? "bg-emerald-500 text-white" : showAnswer && idx === selectedOption ? "bg-red-500 text-white" : "bg-slate-100 text-slate-600")}>
                     {String.fromCharCode(2465 + idx)}
                   </span>
                   <span className="text-sm font-medium text-slate-700">{opt}</span>
@@ -251,7 +239,7 @@ export default function Home() {
               <div className="mt-4 animate-slide-up">
                 {selectedOption === sampleMCQ.correctAnswer ? (
                   <p className="text-sm text-emerald-600 font-medium bg-emerald-50 p-3 rounded-xl">
-                    সঠিক উত্তর! শাবাশ 👏
+                    সঠিক উত্তর, শাবাশ
                   </p>
                 ) : (
                   <p className="text-sm text-red-500 font-medium bg-red-50 p-3 rounded-xl">
