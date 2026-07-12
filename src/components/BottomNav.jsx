@@ -1,9 +1,18 @@
 import { NavLink } from 'react-router-dom'
 import { HiHome, HiClipboardCheck, HiDocumentText, HiChartBar, HiUser } from 'react-icons/hi'
-
+import { HiHome, HiClipboardCheck, HiDocumentText, HiChartBar, HiUser, HiBookOpen } from 'react-icons/hi'
 const navItems = [
   { to: '/', label: 'হোম', icon: HiHome, end: true },
   { to: '/mcq', label: 'MCQ', icon: HiClipboardCheck },
+const navItems = [
+  { to: '/', label: 'হোম', icon: HiHome, end: true },
+  { to: '/mcq', label: 'MCQ', icon: HiClipboardCheck },
+  { to: '/topics', label: 'টপিক', icon: HiBookOpen },
+  { to: '/written', label: 'লিখিত', icon: HiDocumentText },
+  { to: '/result', label: 'ফলাফল', icon: HiChartBar },
+  { to: '/profile', label: 'প্রোফাইল', icon: HiUser },
+]
+  
   { to: '/written', label: 'লিখিত', icon: HiDocumentText },
   { to: '/result', label: 'ফলাফল', icon: HiChartBar },
   { to: '/profile', label: 'প্রোফাইল', icon: HiUser },
