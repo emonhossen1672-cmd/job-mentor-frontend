@@ -42,6 +42,35 @@ export const fetchMCQs = async () => {
   }
 }
 
+export const fetchTopics = async () => {
+  try {
+    const res = await api.get('/topics')
+    return res.data
+  } catch (err) {
+    console.error('Failed to fetch topics:', err)
+    throw err
+  }
+}
+
+export const fetchSubtopics = async (topicId) => {
+  try {
+    const res = await api.get(`/topics/${topicId}/subtopics`)
+    return res.data
+  } catch (err) {
+    console.error('Failed to fetch subtopics:', err)
+    throw err
+  }
+}
+
+export const fetchSubtopicMCQs = async (subtopicId) => {
+  try {
+    const res = await api.get(`/subtopics/${subtopicId}/mcqs`)
+    return res.data
+  } catch (err) {
+    console.error('Failed to fetch subtopic MCQs:', err)
+    throw err
+  }
+}
 export const fetchWrittenQuestions = async () => {
   try {
     const res = await api.get('/written-questions')
