@@ -231,7 +231,7 @@ export default function Home() {
                 <button
                   key={idx}
                   onClick={() => handleOptionClick(idx)}
-                  className={`w-full text-left p-3 rounded-xl border-2 transition-all duration-200 flex items-center gap-3 ${getOptionClass(idx)}`}
+                  className={"w-full text-left p-3 rounded-xl border-2 transition-all duration-200 flex items-center gap-3 " + getOptionClass(idx)}
                 >
                   <span className={`w-7 h-7 rounded-lg flex items-center justify-center text-sm font-bold ${
                     showAnswer && idx === sampleMCQ.correctAnswer
