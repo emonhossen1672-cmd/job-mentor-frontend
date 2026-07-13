@@ -81,6 +81,25 @@ export const fetchWrittenQuestions = async () => {
   }
 }
 
+export const fetchExamPapers = async () => {
+  try {
+    const res = await api.get('/exam-papers')
+    return res.data
+  } catch (err) {
+    console.error('Failed to fetch exam papers:', err)
+    throw err
+  }
+}
+
+export const fetchExamPapersByInstitution = async (institutionName) => {
+  try {
+    const res = await api.get(`/exam-papers/institution/${encodeURIComponent(institutionName)}`)
+    return res.data
+  } catch (err) {
+    console.error('Failed to fetch institution papers:', err)
+    throw err
+  }
+}
 export const fetchSubmissions = async () => {
   try {
     const res = await api.get('/submissions')
