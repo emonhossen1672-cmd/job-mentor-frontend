@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import {
   HiUser,
   HiMail,
@@ -13,9 +14,12 @@ import {
   HiStar,
   HiFire,
   HiCheckCircle,
+  HiX,
 } from 'react-icons/hi'
+import PageHeader from '../components/PageHeader.jsx'
 
 export default function Profile() {
+  const navigate = useNavigate()
   const [profile, setProfile] = useState({
     name: 'রাহুল আহমেদ',
     email: 'rahul.ahmed@example.com',
@@ -27,6 +31,8 @@ export default function Profile() {
 
   const [editing, setEditing] = useState(false)
   const [formData, setFormData] = useState(profile)
+  const [activeMenu, setActiveMenu] = useState(null)
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false)
 
   const handleSave = () => {
     setProfile(formData)
@@ -36,6 +42,12 @@ export default function Profile() {
   const handleCancel = () => {
     setFormData(profile)
     setEditing(false)
+  }
+
+  const handleLogout = () => {
+    localStorage.removeItem('jobMentorToken')
+    setShowLogoutConfirm(false)
+    navigate('/')
   }
 
   const stats = [
@@ -215,12 +227,13 @@ export default function Profile() {
         )}
 
         {/* Menu */}
-        <div className="card overflow-hidden mb-4">
+        <div className="card overflow-hidden mb-2">
           {menuItems.map((item, idx) => {
             const Icon = item.icon
             return (
               <button
                 key={item.label}
+                onClick={() => setActiveMenu(activeMenu === item.label ? null : item.label)}
                 className={`w-full flex items-center gap-3 p-4 hover:bg-slate-50 active:bg-slate-100 transition-all ${
                   idx !== menuItems.length - 1 ? 'border-b border-slate-100' : ''
                 }`}
@@ -232,12 +245,37 @@ export default function Profile() {
             )
           })}
         </div>
+        {activeMenu && (
+          <div className="flex items-center justify-between p-3 mb-4 rounded-xl bg-brand-50 animate-slide-up">
+            <p className="text-xs text-brand-700 font-medium">{activeMenu} ফিচারটি শীঘ্রই আসছে</p>
+            <button onClick={() => setActiveMenu(null)} className="p-1 text-brand-400 hover:text-brand-600">
+              <HiX className="text-base" />
+            </button>
+          </div>
+        )}
 
         {/* Logout */}
-        <button className="w-full flex items-center justify-center gap-2 p-4 bg-red-50 text-red-500 font-semibold rounded-2xl hover:bg-red-100 active:scale-95 transition-all">
-          <HiLogout className="text-lg" />
-          লগআউট
-        </button>
+        {showLogoutConfirm ? (
+          <div className="card p-4 mb-4 animate-slide-up">
+            <p className="text-sm font-medium text-slate-700 mb-3 text-center">আপনি কি নিশ্চিতভাবে লগআউট করতে চান?</p>
+            <div className="flex gap-3">
+              <button onClick={handleLogout} className="flex-1 flex items-center justify-center gap-2 p-3 bg-red-500 text-white font-semibold rounded-xl hover:bg-red-600 active:scale-95 transition-all text-sm">
+                <HiLogout /> হ্যাঁ, লগআউট
+              </button>
+              <button onClick={() => setShowLogoutConfirm(false)} className="flex-1 btn-secondary text-sm">
+                বাতিল
+              </button>
+            </div>
+          </div>
+        ) : (
+          <button
+            onClick={() => setShowLogoutConfirm(true)}
+            className="w-full flex items-center justify-center gap-2 p-4 bg-red-50 text-red-500 font-semibold rounded-2xl hover:bg-red-100 active:scale-95 transition-all"
+          >
+            <HiLogout className="text-lg" />
+            লগআউট
+          </button>
+        )}
 
         <p className="text-center text-xs text-slate-300 mt-6">Job Mentor v১.০.০</p>
       </div>
