@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import {
   HiDocumentText,
   HiPhotograph,
@@ -19,6 +20,8 @@ const toBengaliNumber = (num) => {
 }
 
 export default function WrittenExam() {
+ const [searchParams] = useSearchParams()
+  const subject = searchParams.get('subject')
   const [questions, setQuestions] = useState([])
   const [currentIndex, setCurrentIndex] = useState(0)
   const [loading, setLoading] = useState(true)
@@ -35,7 +38,7 @@ export default function WrittenExam() {
     setLoading(true)
     setError(null)
     try {
-      const data = await fetchWrittenQuestions()
+      const data = await fetchWrittenQuestions(subject)
       const list = Array.isArray(data) ? data : data?.data || data?.questions || []
       if (!list.length) throw new Error('কোনো প্রশ্ন পাওয়া যায়নি')
       const normalized = list.map((q, i) => ({
@@ -55,7 +58,7 @@ export default function WrittenExam() {
 
   useEffect(() => {
     loadQuestions()
-  }, [loadQuestions])
+  }, [subject])
 
   const resetForm = () => {
     setAnswer('')
