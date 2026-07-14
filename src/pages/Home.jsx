@@ -177,7 +177,7 @@ export default function Home() {
         </div>
         <div className="grid grid-cols-2 gap-3">
           <div
-            onClick={() => navigate('/mcq')}
+            onClick={() => navigate('/topics')}
             className="exam-card cursor-pointer"
             style={{ background: 'linear-gradient(160deg,#60a5fa,#1d4ed8 60%,#1e3a8a)' }}
           >
