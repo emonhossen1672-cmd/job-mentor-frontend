@@ -1,24 +1,31 @@
 import { useState, useEffect } from 'react'
 import { fetchTopics, fetchSubtopics, fetchSubtopicMCQs } from '../services/api'
 
+const categories = [
+  { key: 'bcs', label: 'বিসিএস প্রশ্নব্যাংক', icon: '📘', color: 'bg-blue-50 text-blue-600' },
+  { key: 'primary', label: 'প্রাইমারি প্রশ্নব্যাংক', icon: '🏫', color: 'bg-emerald-50 text-emerald-600' },
+  { key: 'nibondhon', label: 'নিবন্ধন প্রশ্নব্যাংক', icon: '📝', color: 'bg-amber-50 text-amber-600' },
+  { key: 'grade_9_20', label: '৯-২০ গ্রেড জব সলুশন', icon: '💼', color: 'bg-purple-50 text-purple-600' },
+  { key: 'topic_guru', label: 'টপিকগুরু', icon: '🎯', color: 'bg-rose-50 text-rose-600' },
+]
+
 export default function Topics() {
-  const [view, setView] = useState('topics') // topics | subtopics | questions
+  const [view, setView] = useState('categories') // categories | topics | subtopics | questions
+  const [selectedCategory, setSelectedCategory] = useState(null)
   const [topics, setTopics] = useState([])
   const [subtopics, setSubtopics] = useState([])
   const [questions, setQuestions] = useState([])
   const [selectedTopic, setSelectedTopic] = useState(null)
   const [selectedSubtopic, setSelectedSubtopic] = useState(null)
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState(false)
 
-  useEffect(() => {
-    loadTopics()
-  }, [])
-
-  async function loadTopics() {
+  async function openCategory(cat) {
+    setSelectedCategory(cat)
     setLoading(true)
     try {
-      const data = await fetchTopics()
+      const data = await fetchTopics(cat.key)
       setTopics(data)
+      setView('topics')
     } catch (err) {
       console.error(err)
     }
@@ -54,6 +61,7 @@ export default function Topics() {
   function goBack() {
     if (view === 'questions') { setView('subtopics'); setQuestions([]) }
     else if (view === 'subtopics') { setView('topics'); setSubtopics([]) }
+    else if (view === 'topics') { setView('categories'); setTopics([]); setSelectedCategory(null) }
   }
 
   if (loading) {
@@ -62,15 +70,35 @@ export default function Topics() {
 
   return (
     <div className="p-4 pb-20">
-      {view !== 'topics' && (
+      {view !== 'categories' && (
         <button onClick={goBack} className="mb-4 text-blue-600 font-medium">
           ← ফিরে যান
         </button>
       )}
 
+      {view === 'categories' && (
+        <div>
+          <h1 className="text-xl font-bold mb-4">প্রিলি প্রস্তুতি</h1>
+          <div className="grid grid-cols-2 gap-3">
+            {categories.map((cat) => (
+              <div
+                key={cat.key}
+                onClick={() => openCategory(cat)}
+                className="bg-white rounded-xl shadow p-4 active:bg-gray-50 flex flex-col items-center text-center"
+              >
+                <div className={`w-12 h-12 rounded-lg ${cat.color} flex items-center justify-center text-2xl mb-2`}>
+                  {cat.icon}
+                </div>
+                <div className="font-semibold text-gray-800 text-sm">{cat.label}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
       {view === 'topics' && (
         <div>
-          <h1 className="text-xl font-bold mb-4">টপিক গুরু</h1>
+          <h1 className="text-xl font-bold mb-4">{selectedCategory?.label}</h1>
           <div className="space-y-3">
             {topics.map(topic => (
               <div
