@@ -71,9 +71,10 @@ export const fetchSubtopicMCQs = async (subtopicId) => {
     throw err
   }
 }
-export const fetchWrittenQuestions = async () => {
+export const fetchWrittenQuestions = async (subject) => {
   try {
-    const res = await api.get('/written-questions')
+    const params = subject ? { subject } : {}
+    const res = await api.get('/written-questions', { params })
     return res.data
   } catch (err) {
     console.error('Failed to fetch written questions:', err)
