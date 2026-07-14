@@ -119,14 +119,14 @@ export default function Home() {
           </div>
           <div className="flex gap-3 mt-5 relative z-10">
             <button
-              onClick={() => navigate('/mcq')}
+              onClick={() => navigate('/model-tests}
               className="bg-white text-brand-600 font-semibold py-2.5 px-5 rounded-xl text-sm shadow-md hover:shadow-lg active:scale-95 transition-all flex items-center gap-2"
             >
               <HiClipboardCheck className="text-lg" />
               পরীক্ষা শুরু করুন
             </button>
             <button
-              onClick={() => navigate('/written')}
+              onClick={() => navigate('/model-tests?type=written'}
               className="bg-white/15 backdrop-blur-sm text-white font-semibold py-2.5 px-5 rounded-xl text-sm border border-white/20 hover:bg-white/25 active:scale-95 transition-all flex items-center gap-2"
             >
               <HiDocumentText className="text-lg" />
