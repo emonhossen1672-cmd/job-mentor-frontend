@@ -42,9 +42,9 @@ export const fetchMCQs = async () => {
   }
 }
 
-export const fetchTopics = async () => {
+export const fetchTopics = async (category) => {
   try {
-    const res = await api.get('/topics')
+    const res = await api.get('/topics', { params: category ? { category } : {} })
     return res.data
   } catch (err) {
     console.error('Failed to fetch topics:', err)
