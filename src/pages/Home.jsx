@@ -141,7 +141,7 @@ export default function Home() {
         <h2 className="section-title">প্রস্তুতি শুরু করুন</h2>
         <div className="grid grid-cols-1 gap-3">
           <div
-            onClick={() => navigate('/mcq')}
+            onClick={() => navigate('/topics)}
             className="type-card-lg cursor-pointer"
             style={{ background: 'linear-gradient(135deg,#3b82f6,#1e40af)' }}
           >
