@@ -111,7 +111,7 @@ export default function ExamPapers() {
           {selectedPaper.file_type === 'pdf' ? (
             <div className="w-full" style={{ height: '75vh' }}>
               <iframe
-                src={selectedPaper.file_url}
+                src={`https://docs.google.com/viewer?url=${encodeURIComponent(selectedPaper.file_url)}&embedded=true`}
                 title={selectedPaper.exam_title}
                 className="w-full h-full rounded-xl border border-gray-200"
               />
