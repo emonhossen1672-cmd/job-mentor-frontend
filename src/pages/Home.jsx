@@ -1,27 +1,17 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
-  HiAcademicCap,
   HiBookOpen,
   HiClipboardCheck,
   HiDocumentText,
   HiTrendingUp,
   HiClock,
   HiUsers,
-  HiStar,
   HiArrowRight,
   HiFire,
-  HiLightBulb,
 } from 'react-icons/hi';
 import { fetchMCQs } from '../services/api.js';
 import LoadingSpinner from '../components/LoadingSpinner.jsx';
-
-const categories = [
-  { id: 1, name: 'সরকারি চাকরি', icon: HiAcademicCap, color: 'from-blue-500 to-blue-600', count: '৬২০+' },
-  { id: 2, name: 'ব্যাংক চাকরি', icon: HiTrendingUp, color: 'from-emerald-500 to-emerald-600', count: '৮৫+' },
-  { id: 3, name: 'BCS প্রস্তুতি', icon: HiStar, color: 'from-amber-500 to-orange-500', count: '২০০+' },
-  { id: 4, name: 'প্রাইভেট চাকরি', icon: HiUsers, color: 'from-purple-500 to-pink-500', count: '৯৫+' },
-]
 
 const subjects = [
   { id: 1, name: 'বাংলা সাহিত্য', icon: '📖', total: 450, color: 'bg-rose-50 text-rose-600' },
@@ -92,23 +82,42 @@ export default function Home() {
 
   return (
     <div className="page-content animate-fade-in">
-      <section className="gradient-header -mx-4 -mt-4 px-4 pt-8 pb-10 rounded-b-3xl mb-6 relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-40 h-40 bg-white/10 rounded-full -translate-y-12 translate-x-12" />
-        <div className="absolute bottom-0 left-0 w-32 h-32 bg-white/5 rounded-full translate-y-8 -translate-x-8" />
+      {/* Logo */}
+      <div className="flex items-center justify-center gap-2 mb-4">
+        <div className="logo-mark text-base">🎯</div>
+        <div className="text-xl font-extrabold flex items-baseline">
+          <span className="logo-gradient-text">Job</span>
+          <span className="text-red-500 text-2xl leading-none mx-0.5">.</span>
+          <span className="text-slate-900 ml-0.5">Mentor</span>
+        </div>
+      </div>
+
+      {/* Hero */}
+      <section className="hero-banner mb-6">
         <div className="relative z-10">
-          <div className="flex items-center gap-2 mb-3">
-            <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center backdrop-blur-sm">
-              <HiAcademicCap className="text-2xl" />
-            </div>
-            <span className="text-sm font-medium text-brand-100">Job Mentor</span>
+          <div className="hero-badge">
+            <span className="live-dot" />
+            ৯ম-২০তম গ্রেড · সকল ক্যাডার বহির্ভূত পদ
           </div>
-          <h1 className="text-2xl font-bold mb-2 text-balance">
-            চাকরি প্রস্তুতি এখন আরও সহজ
+          <h1 className="hero-title">
+            {['বিসিএসসহ,', '৯ম-২০', 'গ্রেডে', 'চাকরি', 'পান'].map((word, idx) => (
+              <span
+                key={word}
+                className="hero-word"
+                style={{ animationDelay: `${0.05 + idx * 0.08}s` }}
+              >
+                {word}
+              </span>
+            ))}
+            <span className="hero-word hero-word-accent" style={{ animationDelay: '0.45s' }}>
+              দ্রুত
+            </span>
           </h1>
-          <p className="text-sm text-brand-100 mb-5 max-w-xs">
-            MCQ ও লিখিত পরীক্ষার অনুশীলন করুন, ফলাফল দেখুন, সবকিছু এক আপে
-          </p>
-          <div className="flex gap-3">
+          <div className="hero-sub">
+            <span className="spark-icon">✨</span>
+            সকল প্রিলি + রিটেন প্রস্তুতি এক প্লাটফর্মে
+          </div>
+          <div className="flex gap-3 mt-5 relative z-10">
             <button
               onClick={() => navigate('/mcq')}
               className="bg-white text-brand-600 font-semibold py-2.5 px-5 rounded-xl text-sm shadow-md hover:shadow-lg active:scale-95 transition-all flex items-center gap-2"
@@ -127,29 +136,104 @@ export default function Home() {
         </div>
       </section>
 
+      {/* প্রিলি / রিটেন — বড় কার্ড */}
       <section className="mb-6">
-        <h2 className="section-title">
-          <HiLightBulb className="text-brand-500" />
-          ক্যাটাগরি
-        </h2>
+        <h2 className="section-title">প্রস্তুতি শুরু করুন</h2>
+        <div className="grid grid-cols-1 gap-3">
+          <div
+            onClick={() => navigate('/mcq')}
+            className="type-card-lg cursor-pointer"
+            style={{ background: 'linear-gradient(135deg,#3b82f6,#1e40af)' }}
+          >
+            <div className="relative z-10 text-3xl">📘</div>
+            <h3 className="type-card-lg-title">প্রিলি প্রস্তুতি</h3>
+            <p className="relative z-10 text-xs opacity-90 mt-1">MCQ + টপিক গুরু</p>
+            <span className="relative z-10 inline-block bg-white/20 text-[11px] font-bold px-3 py-1 rounded-full mt-3">
+              ৮,০০০+ MCQ
+            </span>
+          </div>
+          <div
+            onClick={() => navigate('/written')}
+            className="type-card-lg cursor-pointer"
+            style={{ background: 'linear-gradient(135deg,#f59e0b,#c2410c)' }}
+          >
+            <div className="relative z-10 text-3xl">📝</div>
+            <h3 className="type-card-lg-title" style={{ animationDelay: '0.15s' }}>রিটেন প্রস্তুতি</h3>
+            <p className="relative z-10 text-xs opacity-90 mt-1">লিখিত + প্রশ্নব্যাংক</p>
+            <span className="relative z-10 inline-block bg-white/20 text-[11px] font-bold px-3 py-1 rounded-full mt-3">
+              ১,২০০+ প্রশ্নপত্র
+            </span>
+          </div>
+        </div>
+      </section>
+
+      {/* পরীক্ষা দিন */}
+      <section className="mb-6">
+        <div className="flex items-center justify-between mb-3">
+          <h2 className="section-title mb-0">পরীক্ষা দিন</h2>
+          <button onClick={() => navigate('/mcq')} className="text-xs text-brand-600 font-medium flex items-center gap-1">
+            সব দেখুন <HiArrowRight />
+          </button>
+        </div>
         <div className="grid grid-cols-2 gap-3">
-          {categories.map((cat, idx) => {
-            const Icon = cat.icon
-            return (
-              <div
-                key={cat.id}
-                onClick={() => navigate('/mcq')}
-                className="card card-hover p-4 cursor-pointer animate-slide-up"
-                style={{ animationDelay: `${idx * 80}ms` }}
-              >
-                <div className={`w-11 h-11 rounded-xl bg-gradient-to-br ${cat.color} flex items-center justify-center mb-3 shadow-sm`}>
-                  <Icon className="text-xl text-white" />
-                </div>
-                <h3 className="font-semibold text-sm text-slate-800 mb-0.5">{cat.name}</h3>
-                <p className="text-xs text-slate-400">{cat.count} প্রশ্ন</p>
-              </div>
-            )
-          })}
+          <div
+            onClick={() => navigate('/mcq')}
+            className="exam-card cursor-pointer"
+            style={{ background: 'linear-gradient(160deg,#60a5fa,#1d4ed8 60%,#1e3a8a)' }}
+          >
+            <span className="exam-badge">
+              <span className="live-dot" /> লাইভ
+            </span>
+            <div className="exam-icon">🧩</div>
+            <h4 className="relative z-10 text-sm font-extrabold mt-2">Preliminary</h4>
+            <p className="relative z-10 text-[10px] opacity-90 mt-1">৩২টি মডেল টেস্ট</p>
+            <span className="exam-cta">পরীক্ষা দিন</span>
+          </div>
+          <div
+            onClick={() => navigate('/written')}
+            className="exam-card cursor-pointer"
+            style={{ background: 'linear-gradient(160deg,#fbbf24,#f97316 60%,#9a3412)', animationDelay: '0.2s' }}
+          >
+            <span className="exam-badge">
+              <span className="live-dot" /> নতুন
+            </span>
+            <div className="exam-icon">✍️</div>
+            <h4 className="relative z-10 text-sm font-extrabold mt-2">Written</h4>
+            <p className="relative z-10 text-[10px] opacity-90 mt-1">১৮টি রিটেন পরীক্ষা</p>
+            <span className="exam-cta">পরীক্ষা দিন</span>
+          </div>
+        </div>
+      </section>
+
+      {/* ফলাফল */}
+      <section className="mb-6">
+        <div className="flex items-center justify-between mb-3">
+          <h2 className="section-title mb-0">ফলাফল</h2>
+          <button onClick={() => navigate('/result')} className="text-xs text-brand-600 font-medium flex items-center gap-1">
+            সব দেখুন <HiArrowRight />
+          </button>
+        </div>
+        <div className="grid grid-cols-2 gap-3">
+          <div
+            onClick={() => navigate('/result')}
+            className="card cursor-pointer text-center p-4 opacity-0"
+            style={{ borderTop: '3px solid #2563eb', animation: 'fadeSlideUp .55s ease .05s forwards' }}
+          >
+            <div className="result-ring result-ring-prelim"><span>৭২%</span></div>
+            <h5 className="text-sm font-extrabold text-slate-800">Preliminary</h5>
+            <p className="text-[10px] text-slate-400 mt-0.5">গড় স্কোর</p>
+            <div className="text-[9px] text-slate-300 mt-1.5">১২টি পরীক্ষা সম্পন্ন</div>
+          </div>
+          <div
+            onClick={() => navigate('/result')}
+            className="card cursor-pointer text-center p-4 opacity-0"
+            style={{ borderTop: '3px solid #ea580c', animation: 'fadeSlideUp .55s ease .2s forwards' }}
+          >
+            <div className="result-ring result-ring-written"><span>৬৫%</span></div>
+            <h5 className="text-sm font-extrabold text-slate-800">Written</h5>
+            <p className="text-[10px] text-slate-400 mt-0.5">গড় স্কোর</p>
+            <div className="text-[9px] text-slate-300 mt-1.5">৭টি পরীক্ষা সম্পন্ন</div>
+          </div>
         </div>
       </section>
 
@@ -260,3 +344,5 @@ export default function Home() {
     </div>
   )
 }
+
+          
