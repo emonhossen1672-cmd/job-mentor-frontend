@@ -68,6 +68,135 @@
   .gradient-header {
     @apply bg-gradient-to-br from-brand-700 via-brand-600 to-brand-500 text-white;
   }
+
+  /* ---- Logo ---- */
+  .logo-mark {
+    @apply w-8 h-8 rounded-lg flex items-center justify-center text-white flex-shrink-0;
+    background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+    box-shadow: 0 4px 10px rgba(37, 99, 235, 0.35);
+  }
+  .logo-gradient-text {
+    background: linear-gradient(135deg, #1d4ed8, #3b82f6);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  /* ---- Animated hero banner ---- */
+  .hero-banner {
+    @apply relative overflow-hidden rounded-3xl px-5 py-6 text-white;
+    background: linear-gradient(120deg, #3b82f6, #1d4ed8, #2563eb, #1e40af);
+    background-size: 300% 300%;
+    animation: heroFlow 10s ease infinite;
+  }
+  .hero-banner::before {
+    content: "";
+    position: absolute; top: -50px; right: -30px; width: 160px; height: 160px;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.18) 0%, rgba(255, 255, 255, 0) 70%);
+    border-radius: 9999px;
+    animation: floatBlob 6s ease-in-out infinite;
+  }
+  .hero-banner::after {
+    content: "";
+    position: absolute; bottom: -40px; left: -20px; width: 110px; height: 110px;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0) 70%);
+    border-radius: 9999px;
+    animation: floatBlob 7s ease-in-out infinite reverse;
+  }
+  .hero-badge {
+    @apply relative z-10 inline-flex items-center gap-1.5 text-[10px] font-medium bg-white/15 px-3 py-1 rounded-full;
+  }
+  .live-dot {
+    @apply w-1.5 h-1.5 rounded-full bg-emerald-400;
+    animation: pulseGlow 1.4s ease-in-out infinite;
+  }
+  .hero-title {
+    @apply relative z-10 text-[17px] font-extrabold leading-snug mt-3;
+  }
+  .hero-word {
+    display: inline-block;
+    opacity: 0;
+    transform: translateY(12px);
+    animation: fadeSlideUp 0.5s ease forwards;
+    margin-right: 0.2em;
+  }
+  .hero-word-accent {
+    color: #fde68a;
+    animation: fadeSlideUp 0.5s ease forwards, pulseGlow 2.2s ease-in-out 0.8s infinite;
+  }
+  .hero-sub {
+    @apply relative z-10 inline-flex items-center gap-1.5 text-[11px] font-bold bg-white/15 border border-white/25 px-3 py-1.5 rounded-full mt-3;
+    opacity: 0;
+    animation: fadeSlideUp 0.55s ease 0.55s forwards;
+  }
+  .spark-icon {
+    display: inline-block;
+    animation: sparkSpin 2.5s linear infinite;
+  }
+
+  /* ---- Big প্রিলি / রিটেন cards ---- */
+  .type-card-lg {
+    @apply relative overflow-hidden rounded-2xl p-6 text-white text-center flex flex-col items-center;
+  }
+  .type-card-lg::after {
+    content: ""; position: absolute; right: -24px; top: -24px; width: 100px; height: 100px;
+    background: rgba(255, 255, 255, 0.15); border-radius: 9999px;
+  }
+  .type-card-lg::before {
+    content: ""; position: absolute; left: -20px; bottom: -30px; width: 80px; height: 80px;
+    background: rgba(255, 255, 255, 0.1); border-radius: 9999px;
+  }
+  .type-card-lg-title {
+    @apply relative z-10 text-xl font-extrabold mt-2;
+    opacity: 0;
+    animation: fadeSlideUp 0.6s ease forwards, titleGlow 2.6s ease-in-out 1s infinite;
+  }
+
+  /* ---- Exam cards ---- */
+  .exam-card {
+    @apply relative overflow-hidden rounded-2xl p-4 text-white text-center flex flex-col items-center min-h-[150px];
+    opacity: 0;
+    animation: fadeSlideUp 0.55s ease forwards;
+  }
+  .exam-card::after {
+    content: ""; position: absolute; right: -22px; top: -22px; width: 90px; height: 90px;
+    background: rgba(255, 255, 255, 0.15); border-radius: 9999px;
+  }
+  .exam-card::before {
+    content: ""; position: absolute; left: -18px; bottom: -26px; width: 70px; height: 70px;
+    background: rgba(255, 255, 255, 0.1); border-radius: 9999px;
+  }
+  .exam-badge {
+    @apply relative z-10 self-start inline-flex items-center gap-1 bg-white/20 text-[8.5px] font-extrabold px-2 py-1 rounded-full;
+  }
+  .exam-icon {
+    @apply relative z-10 text-2xl mt-4;
+    animation: iconBounce 2.4s ease-in-out infinite;
+  }
+  .exam-cta {
+    @apply relative z-10 mt-3 text-[9.5px] font-bold bg-white/25 px-3 py-1.5 rounded-full;
+    animation: ctaPulse 2s ease-in-out infinite;
+  }
+
+  /* ---- Result rings ---- */
+  .result-ring {
+    width: 68px; height: 68px; border-radius: 9999px; position: relative; margin: 0 auto 0.6rem;
+  }
+  .result-ring::before {
+    content: ""; position: absolute; inset: 7px; background: #fff; border-radius: 9999px;
+  }
+  .result-ring span {
+    position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+    font-size: 0.8rem; font-weight: 800; color: #111827;
+  }
+  .result-ring-prelim {
+    background: conic-gradient(#2563eb calc(var(--p) * 3.6deg), #e5e9f5 0deg);
+    animation: ringFillPrelim 1.4s ease-out forwards;
+  }
+  .result-ring-written {
+    background: conic-gradient(#ea580c calc(var(--p) * 3.6deg), #f5ebe0 0deg);
+    animation: ringFillWritten 1.4s ease-out 0.1s forwards;
+  }
 }
 
 @layer utilities {
@@ -86,5 +215,74 @@
 
   .safe-bottom {
     padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+}
+
+/* Registered custom property so the result-ring conic-gradient can be animated */
+@property --p {
+  syntax: '<number>';
+  inherits: false;
+  initial-value: 0;
+}
+
+@keyframes heroFlow {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+@keyframes floatBlob {
+  0%, 100% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(10px) scale(1.08); }
+}
+@keyframes fadeSlideUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes pulseGlow {
+  0%, 100% { opacity: 0.85; }
+  50% { opacity: 1; text-shadow: 0 0 12px rgba(255, 255, 255, 0.55); }
+}
+@keyframes sparkSpin {
+  0%, 100% { transform: rotate(0deg) scale(1); }
+  50% { transform: rotate(180deg) scale(1.2); }
+}
+@keyframes titleGlow {
+  0%, 100% { text-shadow: none; }
+  50% { text-shadow: 0 0 14px rgba(255, 255, 255, 0.65); }
+}
+@keyframes iconBounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+@keyframes ctaPulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+@keyframes ringFillPrelim {
+  from { --p: 0; }
+  to { --p: 72; }
+}
+@keyframes ringFillWritten {
+  from { --p: 0; }
+  to { --p: 65; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-banner,
+  .hero-banner::before,
+  .hero-banner::after,
+  .live-dot,
+  .hero-word,
+  .hero-word-accent,
+  .hero-sub,
+  .spark-icon,
+  .type-card-lg-title,
+  .exam-card,
+  .exam-icon,
+  .exam-cta,
+  .result-ring-prelim,
+  .result-ring-written {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
   }
 }
