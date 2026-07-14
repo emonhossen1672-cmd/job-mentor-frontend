@@ -110,7 +110,28 @@ export const fetchSubmissions = async () => {
     throw err
   }
 }
+export const fetchModelTests = async (category, exam_type) => {
+  try {
+    const params = {}
+    if (category) params.category = category
+    if (exam_type) params.exam_type = exam_type
+    const res = await api.get('/model-tests', { params })
+    return res.data
+  } catch (err) {
+    console.error('Failed to fetch model tests:', err)
+    throw err
+  }
+}
 
+export const fetchModelTestQuestions = async (testId) => {
+  try {
+    const res = await api.get(`/model-tests/${testId}/questions`)
+    return res.data
+  } catch (err) {
+    console.error('Failed to fetch model test questions:', err)
+    throw err
+  }
+}
 export const submitWrittenAnswer = async (payload) => {
   try {
     const res = await api.post('/submissions', payload)
