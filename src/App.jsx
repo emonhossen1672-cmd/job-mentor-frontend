@@ -6,6 +6,7 @@ import MCQ from './pages/MCQ.jsx'
 import Topics from './pages/Topics.jsx'
 import WrittenHub from './pages/WrittenHub.jsx'
 import WrittenExam from './pages/WrittenExam.jsx'
+import ExamPapers from './pages/ExamPapers.jsx'
 import Result from './pages/Result.jsx'
 import Profile from './pages/Profile.jsx'
 
@@ -19,7 +20,8 @@ export default function App() {
           <Route path="/mcq" element={<MCQ />} />
           <Route path="/topics" element={<Topics />} />
           <Route path="/written" element={<WrittenHub />} />
-<Route path="/written/study" element={<WrittenExam />} />
+          <Route path="/written/study" element={<WrittenExam />} />
+          <Route path="/exam-papers" element={<ExamPapers />} />
           <Route path="/result" element={<Result />} />
           <Route path="/profile" element={<Profile />} />
         </Routes>
