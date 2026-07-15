@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { useParams, useLocation, useNavigate } from 'react-router-dom'
-import { fetchModelTestQuestions } from '../services/api'
+import { fetchModelTestQuestions, submitModelTest } from '../services/api'
 
 const toBengaliNumber = (num) => {
   const map = { '0': '০', '1': '১', '2': '২', '3': '৩', '4': '৪', '5': '৫', '6': '৬', '7': '৭', '8': '৮', '9': '৯' }
@@ -18,8 +18,11 @@ export default function ModelTestExam() {
   const [answers, setAnswers] = useState({})
   const [currentIndex, setCurrentIndex] = useState(0)
   const [loading, setLoading] = useState(true)
-  const [phase, setPhase] = useState('loading') // loading | exam | result
+  const [phase, setPhase] = useState('loading')
   const [secondsLeft, setSecondsLeft] = useState(0)
+  const [studentName, setStudentName] = useState(() => localStorage.getItem('jobMentorStudentName') || '')
+  const [submittedScore, setSubmittedScore] = useState(null)
+  const [submitting, setSubmitting] = useState(false)
   const timerRef = useRef(null)
 
   useEffect(() => {
@@ -27,16 +30,28 @@ export default function ModelTestExam() {
       .then((data) => {
         setQuestions(data)
         setSecondsLeft(durationMinutes * 60)
-        setPhase('exam')
+        setPhase('name')
       })
       .catch((err) => console.error(err))
       .finally(() => setLoading(false))
   }, [id])
 
-  const finishExam = useCallback(() => {
+  const finishExam = useCallback(async () => {
     clearInterval(timerRef.current)
+    setSubmitting(true)
+    try {
+      const answersPayload = questions.map((q) => ({
+        question_id: q.id,
+        selected: answers[q.id] || null
+      }))
+      const result = await submitModelTest(id, { student_name: studentName, answers: answersPayload })
+      setSubmittedScore(result)
+    } catch (err) {
+      console.error(err)
+    }
+    setSubmitting(false)
     setPhase('result')
-  }, [])
+  }, [questions, answers, id, studentName])
 
   useEffect(() => {
     if (phase !== 'exam') return
@@ -52,6 +67,12 @@ export default function ModelTestExam() {
     return () => clearInterval(timerRef.current)
   }, [phase, finishExam])
 
+  const startExam = () => {
+    if (!studentName.trim()) return
+    localStorage.setItem('jobMentorStudentName', studentName.trim())
+    setPhase('exam')
+  }
+
   const selectAnswer = (questionId, letter) => {
     setAnswers((prev) => ({ ...prev, [questionId]: letter }))
   }
@@ -66,12 +87,37 @@ export default function ModelTestExam() {
     return <div className="p-6 text-center text-gray-500">লোড হচ্ছে...</div>
   }
 
+  if (phase === 'name') {
+    return (
+      <div className="p-4 pb-20">
+        <h1 className="text-xl font-bold mb-1">{title}</h1>
+        <p className="text-sm text-gray-500 mb-6">
+          প্রশ্ন: {toBengaliNumber(questions.length)} | সময়: {toBengaliNumber(durationMinutes)} মিনিট
+        </p>
+        <div className="bg-white rounded-xl shadow p-4 mb-4">
+          <label className="text-sm font-semibold text-gray-700 mb-2 block">আপনার নাম</label>
+          <input
+            type="text"
+            value={studentName}
+            onChange={(e) => setStudentName(e.target.value)}
+            placeholder="নাম লিখুন"
+            className="w-full p-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-blue-400"
+          />
+        </div>
+        <button
+          onClick={startExam}
+          disabled={!studentName.trim()}
+          className="w-full bg-blue-600 text-white font-semibold py-3 rounded-xl active:scale-95 transition disabled:opacity-50"
+        >
+          পরীক্ষা শুরু করুন
+        </button>
+      </div>
+    )
+  }
+
   if (phase === 'result') {
-    let score = 0
-    questions.forEach((q) => {
-      if (answers[q.id] === q.correct_answer) score++
-    })
-    const total = questions.length
+    const score = submittedScore?.score ?? 0
+    const total = submittedScore?.total ?? questions.length
     const percentage = total > 0 ? Math.round((score / total) * 100) : 0
 
     return (
@@ -99,7 +145,6 @@ export default function ModelTestExam() {
         <div className="space-y-3">
           {questions.map((q, idx) => {
             const userAnswer = answers[q.id]
-            const isCorrect = userAnswer === q.correct_answer
             return (
               <div key={q.id} className="bg-white rounded-xl shadow p-4">
                 <p className="font-medium text-gray-800 mb-2">{toBengaliNumber(idx + 1)}. {q.question}</p>
@@ -189,14 +234,14 @@ export default function ModelTestExam() {
         ) : (
           <button
             onClick={finishExam}
-            className="flex-1 py-3 rounded-xl bg-emerald-600 text-white font-medium"
+            disabled={submitting}
+            className="flex-1 py-3 rounded-xl bg-emerald-600 text-white font-medium disabled:opacity-60"
           >
-            পরীক্ষা শেষ করুন
+            {submitting ? 'জমা হচ্ছে...' : 'পরীক্ষা শেষ করুন'}
           </button>
         )}
       </div>
 
-      {/* Question navigator */}
       <div className="flex flex-wrap gap-2">
         {questions.map((q, idx) => (
           <button
