@@ -177,7 +177,25 @@ export const uploadWrittenAnswerFiles = async (files) => {
   }
 }
 
+export const submitModelTest = async (testId, payload) => {
+  try {
+    const res = await api.post(`/model-tests/${testId}/submit`, payload)
+    return res.data
+  } catch (err) {
+    console.error('Failed to submit model test:', err)
+    throw err
+  }
+}
 
+export const fetchResults = async (studentName) => {
+  try {
+    const res = await api.get('/results', { params: { student_name: studentName } })
+    return res.data
+  } catch (err) {
+    console.error('Failed to fetch results:', err)
+    throw err
+  }
+}
 
 
 export const submitWrittenModelTest = async (testId, payload) => {
