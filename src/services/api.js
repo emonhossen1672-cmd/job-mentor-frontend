@@ -163,6 +163,23 @@ export const fetchWrittenModelTestQuestions = async (testId) => {
   }
 }
 
+export const uploadWrittenAnswerFiles = async (files) => {
+  try {
+    const formData = new FormData()
+    files.forEach((file) => formData.append('files', file))
+    const res = await api.post('/upload/written-answer', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' }
+    })
+    return res.data
+  } catch (err) {
+    console.error('Failed to upload files:', err)
+    throw err
+  }
+}
+
+
+
+
 export const submitWrittenModelTest = async (testId, payload) => {
   try {
     const res = await api.post(`/written-model-tests/${testId}/submit`, payload)
