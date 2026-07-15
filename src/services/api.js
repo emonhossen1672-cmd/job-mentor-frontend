@@ -142,4 +142,34 @@ export const submitWrittenAnswer = async (payload) => {
   }
 }
 
+export const fetchWrittenModelTests = async (category) => {
+  try {
+    const params = category ? { category } : {}
+    const res = await api.get('/written-model-tests', { params })
+    return res.data
+  } catch (err) {
+    console.error('Failed to fetch written model tests:', err)
+    throw err
+  }
+}
+
+export const fetchWrittenModelTestQuestions = async (testId) => {
+  try {
+    const res = await api.get(`/written-model-tests/${testId}/questions`)
+    return res.data
+  } catch (err) {
+    console.error('Failed to fetch written model test questions:', err)
+    throw err
+  }
+}
+
+export const submitWrittenModelTest = async (testId, payload) => {
+  try {
+    const res = await api.post(`/written-model-tests/${testId}/submit`, payload)
+    return res.data
+  } catch (err) {
+    console.error('Failed to submit written model test:', err)
+    throw err
+  }
+}
 export default api
