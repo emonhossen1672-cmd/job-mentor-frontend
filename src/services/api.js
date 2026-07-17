@@ -132,6 +132,19 @@ export const fetchModelTestQuestions = async (testId) => {
     throw err
   }
 }
+
+export const fetchModelTestLeaderboard = async (testId, limit) => {
+  try {
+    const params = limit ? { limit } : {}
+    const res = await api.get(`/model-tests/${testId}/leaderboard`, { params })
+    return res.data
+  } catch (err) {
+    console.error('Failed to fetch leaderboard:', err)
+    throw err
+  }
+}
+
+
 export const submitWrittenAnswer = async (payload) => {
   try {
     const res = await api.post('/submissions', payload)
