@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { useParams, useLocation, useNavigate } from 'react-router-dom'
-import { fetchModelTestQuestions, submitModelTest } from '../services/api'
+import { fetchModelTestQuestions, submitModelTest, fetchModelTestLeaderboard } from '../services/api'
 
 const toBengaliNumber = (num) => {
   const map = { '0': '০', '1': '১', '2': '২', '3': '৩', '4': '৪', '5': '৫', '6': '৬', '7': '৭', '8': '৮', '9': '৯' }
@@ -21,6 +21,9 @@ export default function ModelTestExam() {
   const [phase, setPhase] = useState('loading')
   const [secondsLeft, setSecondsLeft] = useState(0)
   const [studentName, setStudentName] = useState(() => localStorage.getItem('jobMentorStudentName') || '')
+  const [studentPhone, setStudentPhone] = useState(() => localStorage.getItem('jobMentorStudentPhone') || '')
+  const [leaderboard, setLeaderboard] = useState([])
+  const [leaderboardLoading, setLeaderboardLoading] = useState(false)
   const [submittedScore, setSubmittedScore] = useState(null)
   const [submitting, setSubmitting] = useState(false)
   const timerRef = useRef(null)
@@ -44,14 +47,18 @@ export default function ModelTestExam() {
         question_id: q.id,
         selected: answers[q.id] || null
       }))
-      const result = await submitModelTest(id, { student_name: studentName, answers: answersPayload })
+      const result = await submitModelTest(id, {
+        student_name: studentName,
+        student_phone: studentPhone,
+        answers: answersPayload
+      })
       setSubmittedScore(result)
     } catch (err) {
       console.error(err)
     }
     setSubmitting(false)
     setPhase('result')
-  }, [questions, answers, id, studentName])
+  }, [questions, answers, id, studentName, studentPhone])
 
   useEffect(() => {
     if (phase !== 'exam') return
@@ -67,9 +74,21 @@ export default function ModelTestExam() {
     return () => clearInterval(timerRef.current)
   }, [phase, finishExam])
 
+  useEffect(() => {
+    if (phase !== 'result') return
+    setLeaderboardLoading(true)
+    fetchModelTestLeaderboard(id)
+      .then((data) => setLeaderboard(data))
+      .catch((err) => console.error(err))
+      .finally(() => setLeaderboardLoading(false))
+  }, [phase, id])
+
   const startExam = () => {
     if (!studentName.trim()) return
     localStorage.setItem('jobMentorStudentName', studentName.trim())
+    if (studentPhone.trim()) {
+      localStorage.setItem('jobMentorStudentPhone', studentPhone.trim())
+    }
     setPhase('exam')
   }
 
@@ -103,6 +122,17 @@ export default function ModelTestExam() {
             placeholder="নাম লিখুন"
             className="w-full p-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-blue-400"
           />
+        </div>
+        <div className="bg-white rounded-xl shadow p-4 mb-4">
+          <label className="text-sm font-semibold text-gray-700 mb-2 block">মোবাইল নম্বর (ঐচ্ছিক)</label>
+          <input
+            type="tel"
+            value={studentPhone}
+            onChange={(e) => setStudentPhone(e.target.value)}
+            placeholder="যেমন: ০১৭xxxxxxxx"
+            className="w-full p-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-blue-400"
+          />
+          <p className="text-xs text-gray-400 mt-1.5">লিডারবোর্ডে আপনাকে আলাদাভাবে চিনতে সাহায্য করবে</p>
         </div>
         <button
           onClick={startExam}
@@ -140,6 +170,46 @@ export default function ModelTestExam() {
               <p className="text-xs text-gray-400">মোট</p>
             </div>
           </div>
+        </div>
+
+        <div className="bg-white rounded-xl shadow p-4 mb-4">
+          <h2 className="text-sm font-bold text-gray-800 mb-3">🏆 লিডারবোর্ড — শীর্ষ স্কোরার</h2>
+          {leaderboardLoading ? (
+            <p className="text-xs text-gray-400 text-center py-3">লোড হচ্ছে...</p>
+          ) : leaderboard.length === 0 ? (
+            <p className="text-xs text-gray-400 text-center py-3">এখনো কেউ পরীক্ষা দেয়নি</p>
+          ) : (
+            <div className="space-y-2">
+              {leaderboard.map((row) => {
+                const isMe =
+                  (studentPhone.trim() && row.student_phone === studentPhone.trim()) ||
+                  (!studentPhone.trim() && row.student_name === studentName.trim() && !row.student_phone)
+                return (
+                  <div
+                    key={`${row.student_name}-${row.student_phone || row.rank}`}
+                    className={`flex items-center justify-between p-2.5 rounded-lg ${isMe ? 'bg-blue-50 border border-blue-200' : 'bg-gray-50'}`}
+                  >
+                    <div className="flex items-center gap-2.5">
+                      <span className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${
+                        row.rank === 1 ? 'bg-amber-400 text-white' :
+                        row.rank === 2 ? 'bg-gray-300 text-gray-700' :
+                        row.rank === 3 ? 'bg-orange-300 text-white' :
+                        'bg-gray-100 text-gray-500'
+                      }`}>
+                        {toBengaliNumber(row.rank)}
+                      </span>
+                      <span className="text-sm font-medium text-gray-700">
+                        {row.student_name}{isMe ? ' (আপনি)' : ''}
+                      </span>
+                    </div>
+                    <span className="text-sm font-bold text-blue-600">
+                      {toBengaliNumber(row.score)}/{toBengaliNumber(row.total)}
+                    </span>
+                  </div>
+                )
+              })}
+            </div>
+          )}
         </div>
 
         <div className="space-y-3">
