@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { HiXCircle, HiCheckCircle, HiTrash, HiLightBulb } from 'react-icons/hi'
 import PageHeader from '../components/PageHeader.jsx'
-import { getBookmarkedQuestions, removeBookmarkedQuestion, clearBookmarkedQuestions } from '../utils/bookmarks.js'
+import { getBookmarkedQuestions, removeBookmarkedQuestion, clearBookmarkedQuestions } from './bookmarks.js'
 
 const toBengaliNumber = (num) => {
   const map = { '0': '০', '1': '১', '2': '২', '3': '৩', '4': '৪', '5': '৫', '6': '৬', '7': '৭', '8': '৮', '9': '৯' }
