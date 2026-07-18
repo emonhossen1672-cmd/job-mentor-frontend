@@ -12,6 +12,7 @@ import {
 } from 'react-icons/hi';
 import { fetchMCQs } from '../services/api.js';
 import LoadingSpinner from '../components/LoadingSpinner.jsx';
+import { useAuth } from '../context/AuthContext.jsx';
 
 const subjects = [
   { id: 1, name: 'বাংলা সাহিত্য', icon: '📖', total: 450, color: 'bg-rose-50 text-rose-600' },
@@ -36,6 +37,7 @@ const toBengaliNumber = (num) => {
 
 export default function Home() {
   const navigate = useNavigate()
+  const { user, authLoading } = useAuth()
   const [sampleMCQ, setSampleMCQ] = useState(null)
   const [loading, setLoading] = useState(true)
   const [selectedOption, setSelectedOption] = useState(null)
@@ -82,6 +84,10 @@ export default function Home() {
 
   return (
     <div className="page-content animate-fade-in">
+      {/* ডিবাগ ব্যানার — টেস্টের পর মুছে ফেলা হবে */}
+      <div style={{ background: authLoading ? '#fef3c7' : user ? '#dcfce7' : '#fee2e2', padding: '10px', borderRadius: '10px', marginBottom: '12px', fontSize: '13px', fontWeight: 'bold', textAlign: 'center' }}>
+        {authLoading ? '⏳ লোড হচ্ছে...' : user ? `✅ লগইন আছে: ${user.phoneNumber || user.email || user.uid}` : '❌ লগইন নেই'}
+      </div>
       {/* Logo */}
       <div className="flex items-center justify-center gap-2 mb-4">
         <div className="logo-mark text-base">🎯</div>
