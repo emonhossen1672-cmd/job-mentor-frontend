@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react'
+import { useNavigate } from 'react-router-dom'
 import {
   HiClock,
   HiCheckCircle,
@@ -7,12 +8,14 @@ import {
   HiRefresh,
   HiStar,
   HiLightBulb,
+  HiBookmark,
 } from 'react-icons/hi'
 import { FaTrophy } from 'react-icons/fa'
 import { fetchMCQs } from '../services/api.js'
 import PageHeader from '../components/PageHeader.jsx'
 import LoadingSpinner from '../components/LoadingSpinner.jsx'
 import ErrorState from '../components/ErrorState.jsx'
+import { addBookmarkedQuestion, getBookmarkedQuestions } from '../utils/bookmarks.js'
 
 const QUESTION_TIME = 30
 const toBengaliNumber = (num) => {
@@ -21,6 +24,7 @@ const toBengaliNumber = (num) => {
 }
 
 export default function MCQ() {
+  const navigate = useNavigate()
   const [questions, setQuestions] = useState([])
   const [currentIndex, setCurrentIndex] = useState(0)
   const [selectedOption, setSelectedOption] = useState(null)
@@ -141,6 +145,17 @@ export default function MCQ() {
   }, [questions, activeSubject])
 
   const currentQ = filteredQuestions[currentIndex]
+
+  // ভুল উত্তর হলে (বা সময় শেষ হলে) প্রশ্নটা বুকমার্কে সেভ হবে
+  useEffect(() => {
+    if (!showAnswer || !currentQ) return
+    const isCorrect = selectedOption === currentQ.correctAnswer
+    if (!isCorrect) {
+      addBookmarkedQuestion(currentQ)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [showAnswer])
+
   const progress = filteredQuestions.length > 0 ? ((currentIndex) / filteredQuestions.length) * 100 : 0
   const timerColor = timeLeft <= 5 ? 'text-red-500' : timeLeft <= 10 ? 'text-amber-500' : 'text-brand-600'
   const timerBg = timeLeft <= 5 ? 'bg-red-50' : timeLeft <= 10 ? 'bg-amber-50' : 'bg-brand-50'
@@ -167,6 +182,7 @@ export default function MCQ() {
     const total = filteredQuestions.length || questions.length
     const percentage = total > 0 ? Math.round((score / total) * 100) : 0
     const isGood = percentage >= 60
+    const bookmarkCount = getBookmarkedQuestions().length
     return (
       <div className="page-content animate-fade-in">
         <div className="gradient-header -mx-4 -mt-4 px-4 pt-10 pb-12 rounded-b-3xl mb-6 text-center relative overflow-hidden">
@@ -215,6 +231,16 @@ export default function MCQ() {
               : 'আরও অনুশীলন দরকার। আবার চেষ্টা করুন এবং নিজেকে উন্নত করুন।'}
           </p>
         </div>
+
+        {bookmarkCount > 0 && (
+          <button
+            onClick={() => navigate('/bookmarks')}
+            className="w-full mb-3 flex items-center justify-center gap-2 text-sm font-semibold text-amber-700 bg-amber-50 border border-amber-200 py-3 rounded-xl active:scale-95 transition"
+          >
+            <HiBookmark className="text-lg" />
+            ভুল প্রশ্ন রিভিউ করুন ({toBengaliNumber(bookmarkCount)}টি)
+          </button>
+        )}
 
         <button onClick={handleRestart} className="btn-primary w-full flex items-center justify-center gap-2">
           <HiRefresh /> আবার পরীক্ষা দিন
