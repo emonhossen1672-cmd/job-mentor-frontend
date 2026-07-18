@@ -1,8 +1,10 @@
 import { Routes, Route } from 'react-router-dom'
 import BottomNav from './components/BottomNav.jsx'
 import Home from './pages/Home.jsx'
-import QuestionBank from './pages/QuestionBank.jsx'
+
 import MCQ from './pages/MCQ.jsx'
+import MCQHub from './pages/MCQHub.jsx'
+import QuestionBank from './pages/QuestionBank.jsx'
 import Topics from './pages/Topics.jsx'
 import WrittenModelTestList from './pages/WrittenModelTestList.jsx'
 import WrittenModelTestExam from './pages/WrittenModelTestExam.jsx'
@@ -23,7 +25,8 @@ export default function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/question-bank" element={<QuestionBank />} />
-          <Route path="/mcq" element={<MCQ />} />
+          <Route path="/mcq" element={<MCQHub />} />
+          <Route path="/mcq/practice" element={<MCQ />} />
           <Route path="/topics" element={<Topics />} />
           <Route path="/written" element={<WrittenHub />} />
           
