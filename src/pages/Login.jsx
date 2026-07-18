@@ -51,7 +51,7 @@ export default function Login() {
       setStep('otp')
     } catch (err) {
       console.error(err)
-      setError('OTP পাঠাতে সমস্যা হয়েছে। নম্বরটি আবার চেক করুন।')
+      setError(`ডিবাগ এরর: ${err.code || ''} — ${err.message || 'অজানা সমস্যা'}`)
     }
     setLoading(false)
   }
