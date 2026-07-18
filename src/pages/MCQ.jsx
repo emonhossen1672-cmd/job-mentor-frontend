@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 import {
   HiClock,
   HiCheckCircle,
@@ -16,6 +16,7 @@ import PageHeader from '../components/PageHeader.jsx'
 import LoadingSpinner from '../components/LoadingSpinner.jsx'
 import ErrorState from '../components/ErrorState.jsx'
 import { addBookmarkedQuestion, getBookmarkedQuestions } from './bookmarks.js'
+
 const QUESTION_TIME = 30
 const toBengaliNumber = (num) => {
   const map = { '0': '০', '1': '১', '2': '২', '3': '৩', '4': '৪', '5': '৫', '6': '৬', '7': '৭', '8': '৮', '9': '৯' }
@@ -24,6 +25,7 @@ const toBengaliNumber = (num) => {
 
 export default function MCQ() {
   const navigate = useNavigate()
+  const location = useLocation()
   const [questions, setQuestions] = useState([])
   const [currentIndex, setCurrentIndex] = useState(0)
   const [selectedOption, setSelectedOption] = useState(null)
@@ -59,7 +61,7 @@ export default function MCQ() {
         }
       })
       setQuestions(normalized)
-      setActiveSubject('all')
+      setActiveSubject(location.state?.subject || 'all')
       setCurrentIndex(0)
       setSelectedOption(null)
       setShowAnswer(false)
@@ -71,7 +73,7 @@ export default function MCQ() {
       setError(err.message || 'প্রশ্ন লোড করতে সমস্যা হয়েছে')
       setPhase('error')
     }
-  }, [])
+  }, [location.state])
 
   useEffect(() => {
     loadQuestions()
