@@ -15,8 +15,7 @@ import { fetchMCQs } from '../services/api.js'
 import PageHeader from '../components/PageHeader.jsx'
 import LoadingSpinner from '../components/LoadingSpinner.jsx'
 import ErrorState from '../components/ErrorState.jsx'
-import { addBookmarkedQuestion, getBookmarkedQuestions } from '../utils/bookmarks.js'
-
+import { addBookmarkedQuestion, getBookmarkedQuestions } from './bookmarks.js'
 const QUESTION_TIME = 30
 const toBengaliNumber = (num) => {
   const map = { '0': '০', '1': '১', '2': '২', '3': '৩', '4': '৪', '5': '৫', '6': '৬', '7': '৭', '8': '৮', '9': '৯' }
