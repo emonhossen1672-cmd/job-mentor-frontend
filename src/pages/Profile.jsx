@@ -17,9 +17,11 @@ import {
   HiX,
 } from 'react-icons/hi'
 import PageHeader from '../components/PageHeader.jsx'
+import { useAuth } from '../context/AuthContext.jsx'
 
 export default function Profile() {
   const navigate = useNavigate()
+  const { logout } = useAuth()
   const [profile, setProfile] = useState({
     name: 'রাহুল আহমেদ',
     email: 'rahul.ahmed@example.com',
@@ -44,8 +46,8 @@ export default function Profile() {
     setEditing(false)
   }
 
-  const handleLogout = () => {
-    localStorage.removeItem('jobMentorToken')
+  const handleLogout = async () => {
+    await logout()
     setShowLogoutConfirm(false)
     navigate('/')
   }
