@@ -14,6 +14,7 @@ import ModelTestList from './pages/ModelTestList.jsx'
 import ModelTestExam from './pages/ModelTestExam.jsx'
 import Result from './pages/Result.jsx'
 import Profile from './pages/Profile.jsx'
+import BookmarkedQuestions from './pages/BookmarkedQuestions.jsx'
 
 export default function App() {
   return (
@@ -34,6 +35,7 @@ export default function App() {
           <Route path="/model-tests/:id/exam" element={<ModelTestExam />} />
           <Route path="/result" element={<Result />} />
           <Route path="/profile" element={<Profile />} />
+          <Route path="/bookmarks" element={<BookmarkedQuestions />} />
         </Routes>
       </main>
       <BottomNav />
