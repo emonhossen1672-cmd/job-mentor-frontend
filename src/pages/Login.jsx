@@ -51,7 +51,7 @@ export default function Login() {
       setStep('otp')
     } catch (err) {
       console.error(err)
-      setError(`ডিবাগ এরর: ${err.code || ''} — ${err.message || 'অজানা সমস্যা'}`)
+      setError('OTP পাঠাতে সমস্যা হয়েছে। নম্বরটি আবার চেক করুন।')
     }
     setLoading(false)
   }
@@ -98,8 +98,22 @@ export default function Login() {
         <div className="bg-red-50 text-red-600 text-sm p-3 rounded-xl mb-4 text-center">{error}</div>
       )}
 
+      <button
+        onClick={loginWithGoogle}
+        disabled={loading}
+        className="w-full flex items-center justify-center gap-2 border border-slate-200 py-3.5 rounded-xl font-semibold text-slate-700 active:scale-95 transition disabled:opacity-60 mb-4"
+      >
+        <HiMail className="text-lg" /> Google দিয়ে লগইন করুন
+      </button>
+
+      <div className="flex items-center gap-3 my-4">
+        <div className="flex-1 h-px bg-slate-200" />
+        <span className="text-xs text-slate-400">মোবাইল নম্বর দিয়ে লগইন শীঘ্রই আসছে</span>
+        <div className="flex-1 h-px bg-slate-200" />
+      </div>
+
       {step === 'phone' && (
-        <div className="card p-5 mb-4">
+        <div className="card p-5 mb-4 opacity-50 pointer-events-none">
           <label className="text-sm font-semibold text-slate-700 mb-2 block">মোবাইল নম্বর</label>
           <input
             type="tel"
@@ -107,13 +121,14 @@ export default function Login() {
             onChange={(e) => setPhone(e.target.value)}
             placeholder="০১৭xxxxxxxx"
             className="w-full p-3 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-brand-400 mb-4"
+            disabled
           />
           <button
             onClick={sendOtp}
-            disabled={loading}
+            disabled
             className="btn-primary w-full flex items-center justify-center gap-2 disabled:opacity-60"
           >
-            <HiPhone /> {loading ? 'পাঠানো হচ্ছে...' : 'OTP পাঠান'}
+            <HiPhone /> OTP পাঠান
           </button>
         </div>
       )}
@@ -143,20 +158,6 @@ export default function Login() {
           </button>
         </div>
       )}
-
-      <div className="flex items-center gap-3 my-4">
-        <div className="flex-1 h-px bg-slate-200" />
-        <span className="text-xs text-slate-400">অথবা</span>
-        <div className="flex-1 h-px bg-slate-200" />
-      </div>
-
-      <button
-        onClick={loginWithGoogle}
-        disabled={loading}
-        className="w-full flex items-center justify-center gap-2 border border-slate-200 py-3 rounded-xl font-semibold text-slate-700 active:scale-95 transition disabled:opacity-60"
-      >
-        <HiMail className="text-lg" /> Google দিয়ে লগইন করুন
-      </button>
 
       <div id="recaptcha-container"></div>
     </div>
