@@ -65,6 +65,16 @@ export const fetchSubtopics = async (topicId, uid) => {
   }
 }
 
+export const fetchSubSubtopics = async (subtopicId, uid) => {
+  try {
+    const res = await api.get(`/subtopics/${subtopicId}/subtopics`, { params: uid ? { uid } : {} })
+    return res.data
+  } catch (err) {
+    console.error('Failed to fetch sub-subtopics:', err)
+    throw err
+  }
+}
+
 export const fetchSubtopicMCQs = async (subtopicId, page = 1, pageSize = 50) => {
   try {
     const res = await api.get(`/subtopics/${subtopicId}/mcqs`, { params: { page, pageSize } })
