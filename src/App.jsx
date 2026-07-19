@@ -19,6 +19,7 @@ import Result from './pages/Result.jsx'
 import Profile from './pages/Profile.jsx'
 import BookmarkedQuestions from './pages/BookmarkedQuestions.jsx'
 import Login from './pages/Login.jsx'
+import ComingSoon from './pages/ComingSoon.jsx'
 
 export default function App() {
   return (
@@ -38,17 +39,15 @@ export default function App() {
             <Route path="/model-tests" element={<ModelTestList />} />
             <Route path="/profile" element={<Profile />} />
 
-import ComingSoon from './pages/ComingSoon.jsx'
-// ...
-<Route path="/study/free-hand-writing" element={<ComingSoon />} />
-<Route path="/study/editorial" element={<ComingSoon />} />
-<Route path="/study/newspaper-vocabulary" element={<ComingSoon />} />
-<Route path="/study/current-affairs" element={<ComingSoon />} />
-<Route path="/study/bangla-mukhosto" element={<ComingSoon />} />
-<Route path="/study/translation" element={<ComingSoon />} />
-<Route path="/study/translation-newspaper" element={<ComingSoon />} />
+            {/* Study Section */}
+            <Route path="/study/free-hand-writing" element={<ComingSoon />} />
+            <Route path="/study/editorial" element={<ComingSoon />} />
+            <Route path="/study/newspaper-vocabulary" element={<ComingSoon />} />
+            <Route path="/study/current-affairs" element={<ComingSoon />} />
+            <Route path="/study/bangla-mukhosto" element={<ComingSoon />} />
+            <Route path="/study/translation" element={<ComingSoon />} />
+            <Route path="/study/translation-newspaper" element={<ComingSoon />} />
 
-            
             {/* লগইন বাধ্যতামূলক */}
             <Route
               path="/mcq/practice"
