@@ -65,9 +65,9 @@ export const fetchSubtopics = async (topicId, uid) => {
   }
 }
 
-export const fetchSubtopicMCQs = async (subtopicId) => {
+export const fetchSubtopicMCQs = async (subtopicId, page = 1, pageSize = 50) => {
   try {
-    const res = await api.get(`/subtopics/${subtopicId}/mcqs`)
+    const res = await api.get(`/subtopics/${subtopicId}/mcqs`, { params: { page, pageSize } })
     return res.data
   } catch (err) {
     console.error('Failed to fetch subtopic MCQs:', err)
@@ -75,9 +75,9 @@ export const fetchSubtopicMCQs = async (subtopicId) => {
   }
 }
 
-export const fetchTopicMCQs = async (topicId) => {
+export const fetchTopicMCQs = async (topicId, page = 1, pageSize = 50) => {
   try {
-    const res = await api.get(`/topics/${topicId}/mcqs`)
+    const res = await api.get(`/topics/${topicId}/mcqs`, { params: { page, pageSize } })
     return res.data
   } catch (err) {
     console.error('Failed to fetch topic mcqs:', err)
@@ -130,6 +130,14 @@ export const markQuestionViewed = async (mcqId, uid) => {
     await api.post(`/mcqs/${mcqId}/mark-viewed`, { uid })
   } catch (err) {
     console.error('Failed to mark viewed:', err)
+  }
+}
+
+export const markQuestionViewedBulk = async (ids, uid) => {
+  try {
+    await api.post('/mcqs/mark-viewed-bulk', { uid, ids })
+  } catch (err) {
+    console.error('Failed to bulk mark viewed:', err)
   }
 }
 
