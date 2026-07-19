@@ -55,6 +55,17 @@ export const fetchTopics = async (category, uid) => {
   }
 }
 
+export const fetchLiveUpdates = async () => {
+  try {
+    const res = await api.get('/live-updates')
+    return res.data
+  } catch (err) {
+    console.error('Failed to fetch live updates:', err)
+    throw err
+  }
+}
+
+
 export const fetchSubtopics = async (topicId, uid) => {
   try {
     const res = await api.get(`/topics/${topicId}/subtopics`, { params: uid ? { uid } : {} })
