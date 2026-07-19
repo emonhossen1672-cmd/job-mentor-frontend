@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom'
 import {
   HiUser,
   HiMail,
-  HiPhone,
   HiLocationMarker,
   HiAcademicCap,
   HiPencil,
@@ -21,11 +20,12 @@ import { useAuth } from '../context/AuthContext.jsx'
 
 export default function Profile() {
   const navigate = useNavigate()
-  const { logout } = useAuth()
+  const { user, logout } = useAuth()
+
+  const displayName = user?.displayName || user?.phoneNumber || 'অতিথি ব্যবহারকারী'
+  const displayEmail = user?.email || user?.phoneNumber || ''
+
   const [profile, setProfile] = useState({
-    name: 'রাহুল আহমেদ',
-    email: 'rahul.ahmed@example.com',
-    phone: '০১৭১২৩৪৫৬৭৮',
     location: 'ঢাকা, বাংলাদেশ',
     education: 'স্নাতক (বিএসসি)',
     target: 'BCS প্রশাসন',
@@ -72,18 +72,20 @@ export default function Profile() {
         {/* Profile Avatar */}
         <div className="flex flex-col items-center mb-6 animate-slide-up">
           <div className="relative">
-            <div className="w-24 h-24 rounded-full bg-gradient-to-br from-brand-500 to-brand-700 flex items-center justify-center shadow-lg shadow-brand-500/30">
-              <HiUser className="text-4xl text-white" />
-            </div>
-            <button
-              onClick={() => setEditing(true)}
-              className="absolute bottom-0 right-0 w-8 h-8 rounded-full bg-white border border-slate-200 flex items-center justify-center shadow-md hover:bg-brand-50 active:scale-90 transition-all"
-            >
-              <HiPencil className="text-sm text-brand-600" />
-            </button>
+            {user?.photoURL ? (
+              <img
+                src={user.photoURL}
+                alt={displayName}
+                className="w-24 h-24 rounded-full object-cover shadow-lg shadow-brand-500/30"
+              />
+            ) : (
+              <div className="w-24 h-24 rounded-full bg-gradient-to-br from-brand-500 to-brand-700 flex items-center justify-center shadow-lg shadow-brand-500/30">
+                <HiUser className="text-4xl text-white" />
+              </div>
+            )}
           </div>
-          <h2 className="text-xl font-bold text-slate-800 mt-3">{profile.name}</h2>
-          <p className="text-sm text-slate-400">{profile.email}</p>
+          <h2 className="text-xl font-bold text-slate-800 mt-3">{displayName}</h2>
+          {displayEmail && <p className="text-sm text-slate-400">{displayEmail}</p>}
         </div>
 
         {/* Stats */}
@@ -111,33 +113,6 @@ export default function Profile() {
           <div className="card p-5 mb-4 animate-slide-up">
             <h3 className="font-semibold text-slate-800 mb-4">তথ্য সম্পাদনা</h3>
             <div className="space-y-3">
-              <div>
-                <label className="text-xs font-medium text-slate-500 mb-1 block">নাম</label>
-                <input
-                  type="text"
-                  value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  className="w-full p-3 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-brand-400 focus:ring-2 focus:ring-brand-100 transition-all"
-                />
-              </div>
-              <div>
-                <label className="text-xs font-medium text-slate-500 mb-1 block">ইমেইল</label>
-                <input
-                  type="email"
-                  value={formData.email}
-                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  className="w-full p-3 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-brand-400 focus:ring-2 focus:ring-brand-100 transition-all"
-                />
-              </div>
-              <div>
-                <label className="text-xs font-medium text-slate-500 mb-1 block">ফোন</label>
-                <input
-                  type="text"
-                  value={formData.phone}
-                  onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                  className="w-full p-3 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-brand-400 focus:ring-2 focus:ring-brand-100 transition-all"
-                />
-              </div>
               <div>
                 <label className="text-xs font-medium text-slate-500 mb-1 block">অবস্থান</label>
                 <input
@@ -177,26 +152,27 @@ export default function Profile() {
           </div>
         ) : (
           <div className="card p-5 mb-4 animate-slide-up">
-            <h3 className="font-semibold text-slate-800 mb-4">ব্যক্তিগত তথ্য</h3>
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="font-semibold text-slate-800">ব্যক্তিগত তথ্য</h3>
+              <button
+                onClick={() => setEditing(true)}
+                className="w-8 h-8 rounded-full bg-brand-50 flex items-center justify-center hover:bg-brand-100 active:scale-90 transition-all"
+              >
+                <HiPencil className="text-sm text-brand-600" />
+              </button>
+            </div>
             <div className="space-y-4">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-brand-50 flex items-center justify-center flex-shrink-0">
-                  <HiMail className="text-lg text-brand-500" />
+              {displayEmail && (
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-brand-50 flex items-center justify-center flex-shrink-0">
+                    <HiMail className="text-lg text-brand-500" />
+                  </div>
+                  <div>
+                    <p className="text-xs text-slate-400">যোগাযোগ</p>
+                    <p className="text-sm font-medium text-slate-700">{displayEmail}</p>
+                  </div>
                 </div>
-                <div>
-                  <p className="text-xs text-slate-400">ইমেইল</p>
-                  <p className="text-sm font-medium text-slate-700">{profile.email}</p>
-                </div>
-              </div>
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-emerald-50 flex items-center justify-center flex-shrink-0">
-                  <HiPhone className="text-lg text-emerald-500" />
-                </div>
-                <div>
-                  <p className="text-xs text-slate-400">ফোন</p>
-                  <p className="text-sm font-medium text-slate-700">{profile.phone}</p>
-                </div>
-              </div>
+              )}
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-xl bg-amber-50 flex items-center justify-center flex-shrink-0">
                   <HiLocationMarker className="text-lg text-amber-500" />
