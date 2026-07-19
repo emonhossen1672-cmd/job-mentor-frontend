@@ -1,5 +1,10 @@
 import { useState, useEffect } from 'react'
-import { fetchTopics, fetchSubtopics, fetchSubtopicMCQs } from '../services/api'
+import {
+  fetchTopics, fetchSubtopics, fetchSubtopicMCQs,
+  fetchTopicMCQs, fetchTopicRandomQuiz, fetchSubtopicRandomQuiz,
+  toggleTopicLike, toggleSubtopicLike, markQuestionViewed
+} from '../services/api'
+import { useAuth } from '../context/AuthContext.jsx'
 
 const categories = [
   { key: 'bcs', label: 'বিসিএস প্রশ্নব্যাংক', icon: '📘', color: 'bg-blue-50 text-blue-600' },
@@ -9,21 +14,59 @@ const categories = [
   { key: 'topic_guru', label: 'টপিকগুরু', icon: '🎯', color: 'bg-rose-50 text-rose-600' },
 ]
 
+function ProgressRing({ viewed, total }) {
+  const pct = total > 0 ? Math.min(100, Math.round((viewed / total) * 100)) : 0
+  const r = 22
+  const c = 2 * Math.PI * r
+  const offset = c - (pct / 100) * c
+  return (
+    <div className="relative w-14 h-14 flex-shrink-0">
+      <svg width="56" height="56" viewBox="0 0 56 56">
+        <circle cx="28" cy="28" r={r} fill="none" stroke="#e2e8f0" strokeWidth="4" />
+        <circle
+          cx="28" cy="28" r={r} fill="none" stroke="#3b82f6" strokeWidth="4"
+          strokeDasharray={c} strokeDashoffset={offset} strokeLinecap="round"
+          transform="rotate(-90 28 28)"
+        />
+      </svg>
+      <div className="absolute inset-0 flex items-center justify-center text-[10px] font-bold text-gray-700">
+        {pct}%
+      </div>
+    </div>
+  )
+}
+
+function HeartButton({ liked, count, onToggle }) {
+  return (
+    <button
+      onClick={onToggle}
+      className="flex items-center gap-1 text-sm font-semibold flex-shrink-0"
+    >
+      <span className={liked ? 'text-red-500' : 'text-gray-300'}>{liked ? '❤️' : '🤍'}</span>
+      <span className="text-gray-600">{count}</span>
+    </button>
+  )
+}
+
 export default function Topics() {
-  const [view, setView] = useState('categories') // categories | topics | subtopics | questions
+  const { user } = useAuth()
+  const uid = user?.uid
+
+  const [view, setView] = useState('categories') // categories | topics | subtopics | questions | quiz
   const [selectedCategory, setSelectedCategory] = useState(null)
   const [topics, setTopics] = useState([])
   const [subtopics, setSubtopics] = useState([])
   const [questions, setQuestions] = useState([])
   const [selectedTopic, setSelectedTopic] = useState(null)
   const [selectedSubtopic, setSelectedSubtopic] = useState(null)
+  const [questionsTitle, setQuestionsTitle] = useState('')
   const [loading, setLoading] = useState(false)
 
   async function openCategory(cat) {
     setSelectedCategory(cat)
     setLoading(true)
     try {
-      const data = await fetchTopics(cat.key)
+      const data = await fetchTopics(cat.key, uid)
       setTopics(data)
       setView('topics')
     } catch (err) {
@@ -36,7 +79,7 @@ export default function Topics() {
     setSelectedTopic(topic)
     setLoading(true)
     try {
-      const data = await fetchSubtopics(topic.id)
+      const data = await fetchSubtopics(topic.id, uid)
       setSubtopics(data)
       setView('subtopics')
     } catch (err) {
@@ -45,8 +88,38 @@ export default function Topics() {
     setLoading(false)
   }
 
+  async function openAllTopicQuestions(topic) {
+    setSelectedTopic(topic)
+    setQuestionsTitle(`${topic.name} — সব প্রশ্ন`)
+    setLoading(true)
+    try {
+      const data = await fetchTopicMCQs(topic.id)
+      setQuestions(data)
+      setView('questions')
+    } catch (err) {
+      console.error(err)
+    }
+    setLoading(false)
+  }
+
+  async function openTopicRandomQuiz(topic) {
+    setSelectedTopic(topic)
+    setQuestionsTitle(`${topic.name} — Random Quiz`)
+    setLoading(true)
+    try {
+      const data = await fetchTopicRandomQuiz(topic.id, 20)
+      setQuestions(data)
+      setView('quiz')
+      if (uid) data.forEach((q) => markQuestionViewed(q.id, uid))
+    } catch (err) {
+      console.error(err)
+    }
+    setLoading(false)
+  }
+
   async function openSubtopic(subtopic) {
     setSelectedSubtopic(subtopic)
+    setQuestionsTitle(subtopic.name)
     setLoading(true)
     try {
       const data = await fetchSubtopicMCQs(subtopic.id)
@@ -58,8 +131,44 @@ export default function Topics() {
     setLoading(false)
   }
 
+  async function openSubtopicRandomQuiz(subtopic) {
+    setSelectedSubtopic(subtopic)
+    setQuestionsTitle(`${subtopic.name} — Random Quiz`)
+    setLoading(true)
+    try {
+      const data = await fetchSubtopicRandomQuiz(subtopic.id, 20)
+      setQuestions(data)
+      setView('quiz')
+      if (uid) data.forEach((q) => markQuestionViewed(q.id, uid))
+    } catch (err) {
+      console.error(err)
+    }
+    setLoading(false)
+  }
+
+  async function handleTopicLike(topic) {
+    if (!uid) return
+    try {
+      const result = await toggleTopicLike(topic.id, uid)
+      setTopics((prev) => prev.map((t) => t.id === topic.id ? { ...t, is_liked: result.liked ? 1 : 0, like_count: result.like_count } : t))
+    } catch (err) {
+      console.error(err)
+    }
+  }
+
+  async function handleSubtopicLike(sub) {
+    if (!uid) return
+    try {
+      const result = await toggleSubtopicLike(sub.id, uid)
+      setSubtopics((prev) => prev.map((s) => s.id === sub.id ? { ...s, is_liked: result.liked ? 1 : 0, like_count: result.like_count } : s))
+    } catch (err) {
+      console.error(err)
+    }
+  }
+
   function goBack() {
-    if (view === 'questions') { setView('subtopics'); setQuestions([]) }
+    if (view === 'quiz') { setView(selectedSubtopic ? 'subtopics' : 'topics'); setQuestions([]) }
+    else if (view === 'questions') { setView(selectedSubtopic ? 'subtopics' : 'topics'); setQuestions([]); setSelectedSubtopic(null) }
     else if (view === 'subtopics') { setView('topics'); setSubtopics([]) }
     else if (view === 'topics') { setView('categories'); setTopics([]); setSelectedCategory(null) }
   }
@@ -67,6 +176,9 @@ export default function Topics() {
   if (loading) {
     return <div className="p-6 text-center text-gray-500">লোড হচ্ছে...</div>
   }
+
+  const totalQuestions = topics.reduce((s, t) => s + Number(t.question_count || 0), 0)
+  const totalSubtopics = topics.reduce((s, t) => s + Number(t.subtopic_count || 0), 0)
 
   return (
     <div className="p-4 pb-20">
@@ -98,17 +210,48 @@ export default function Topics() {
 
       {view === 'topics' && (
         <div>
-          <h1 className="text-xl font-bold mb-4">{selectedCategory?.label}</h1>
+          <h1 className="text-xl font-bold mb-1">{selectedCategory?.label}</h1>
+          <p className="text-xs text-gray-400 mb-4">
+            মোট প্রশ্ন: {totalQuestions}টি, সাবটপিক: {totalSubtopics}টি
+          </p>
           <div className="space-y-3">
-            {topics.map(topic => (
-              <div
-                key={topic.id}
-                onClick={() => openTopic(topic)}
-                className="bg-white rounded-xl shadow p-4 active:bg-gray-50"
-              >
-                <div className="font-semibold text-gray-800">{topic.name}</div>
-                <div className="text-sm text-gray-500 mt-1">
-                  প্রশ্ন: {topic.question_count} | সাবটপিক: {topic.subtopic_count}
+            {topics.map((topic, idx) => (
+              <div key={topic.id} className="bg-white rounded-xl shadow p-4">
+                <div className="flex items-start gap-3 mb-3">
+                  <ProgressRing viewed={topic.viewed_count || 0} total={topic.question_count || 0} />
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center justify-between gap-2">
+                      <div className="font-bold text-gray-800 text-sm">{idx + 1}. {topic.name}</div>
+                      <HeartButton
+                        liked={!!Number(topic.is_liked)}
+                        count={topic.like_count || 0}
+                        onToggle={() => handleTopicLike(topic)}
+                      />
+                    </div>
+                    <div className="text-xs text-gray-400 mt-1">
+                      সাবটপিক: {topic.subtopic_count} · প্রশ্ন: {topic.question_count}
+                    </div>
+                  </div>
+                </div>
+                <div className="grid grid-cols-3 gap-2">
+                  <button
+                    onClick={() => openAllTopicQuestions(topic)}
+                    className="bg-blue-50 text-blue-700 text-xs font-semibold py-2 rounded-lg active:bg-blue-100"
+                  >
+                    সব প্রশ্ন
+                  </button>
+                  <button
+                    onClick={() => openTopic(topic)}
+                    className="bg-amber-50 text-amber-700 text-xs font-semibold py-2 rounded-lg active:bg-amber-100"
+                  >
+                    সাবটপিক
+                  </button>
+                  <button
+                    onClick={() => openTopicRandomQuiz(topic)}
+                    className="bg-gray-100 text-gray-700 text-xs font-semibold py-2 rounded-lg active:bg-gray-200"
+                  >
+                    Random Quiz
+                  </button>
                 </div>
               </div>
             ))}
@@ -123,14 +266,36 @@ export default function Topics() {
         <div>
           <h1 className="text-xl font-bold mb-4">{selectedTopic?.name}</h1>
           <div className="space-y-3">
-            {subtopics.map(sub => (
-              <div
-                key={sub.id}
-                onClick={() => openSubtopic(sub)}
-                className="bg-white rounded-xl shadow p-4 active:bg-gray-50"
-              >
-                <div className="font-medium text-gray-800">{sub.name}</div>
-                <div className="text-sm text-gray-500 mt-1">প্রশ্ন: {sub.question_count}</div>
+            {subtopics.map((sub, idx) => (
+              <div key={sub.id} className="bg-white rounded-xl shadow p-4">
+                <div className="flex items-start gap-3 mb-3">
+                  <ProgressRing viewed={sub.viewed_count || 0} total={sub.question_count || 0} />
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center justify-between gap-2">
+                      <div className="font-semibold text-gray-800 text-sm">{idx + 1}. {sub.name}</div>
+                      <HeartButton
+                        liked={!!Number(sub.is_liked)}
+                        count={sub.like_count || 0}
+                        onToggle={() => handleSubtopicLike(sub)}
+                      />
+                    </div>
+                    <div className="text-xs text-gray-400 mt-1">প্রশ্ন: {sub.question_count}</div>
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-2">
+                  <button
+                    onClick={() => openSubtopic(sub)}
+                    className="bg-blue-50 text-blue-700 text-xs font-semibold py-2 rounded-lg active:bg-blue-100"
+                  >
+                    সব প্রশ্ন
+                  </button>
+                  <button
+                    onClick={() => openSubtopicRandomQuiz(sub)}
+                    className="bg-gray-100 text-gray-700 text-xs font-semibold py-2 rounded-lg active:bg-gray-200"
+                  >
+                    Random Quiz
+                  </button>
+                </div>
               </div>
             ))}
             {subtopics.length === 0 && (
@@ -140,9 +305,9 @@ export default function Topics() {
         </div>
       )}
 
-      {view === 'questions' && (
+      {(view === 'questions' || view === 'quiz') && (
         <div>
-          <h1 className="text-xl font-bold mb-4">{selectedSubtopic?.name}</h1>
+          <h1 className="text-xl font-bold mb-4">{questionsTitle}</h1>
           <div className="space-y-4">
             {questions.map((q, idx) => (
               <div key={q.id} className="bg-white rounded-xl shadow p-4">
