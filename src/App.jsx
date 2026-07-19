@@ -38,6 +38,17 @@ export default function App() {
             <Route path="/model-tests" element={<ModelTestList />} />
             <Route path="/profile" element={<Profile />} />
 
+import ComingSoon from './pages/ComingSoon.jsx'
+// ...
+<Route path="/study/free-hand-writing" element={<ComingSoon />} />
+<Route path="/study/editorial" element={<ComingSoon />} />
+<Route path="/study/newspaper-vocabulary" element={<ComingSoon />} />
+<Route path="/study/current-affairs" element={<ComingSoon />} />
+<Route path="/study/bangla-mukhosto" element={<ComingSoon />} />
+<Route path="/study/translation" element={<ComingSoon />} />
+<Route path="/study/translation-newspaper" element={<ComingSoon />} />
+
+            
             {/* লগইন বাধ্যতামূলক */}
             <Route
               path="/mcq/practice"
