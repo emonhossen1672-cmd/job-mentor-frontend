@@ -4,14 +4,9 @@ import {
   HiBookOpen,
   HiClipboardCheck,
   HiDocumentText,
-  HiTrendingUp,
-  HiClock,
-  HiUsers,
   HiArrowRight,
-  HiFire,
 } from 'react-icons/hi';
 import { fetchMCQs } from '../services/api.js';
-import LoadingSpinner from '../components/LoadingSpinner.jsx';
 
 const subjects = [
   { id: 1, name: 'বাংলা সাহিত্য', icon: '📖', total: 450, color: 'bg-rose-50 text-rose-600' },
@@ -22,11 +17,15 @@ const subjects = [
   { id: 6, name: 'আইসিটি', icon: '💻', total: 220, color: 'bg-cyan-50 text-cyan-600' },
 ]
 
-const stats = [
-  { label: 'মোট প্রশ্ন', value: '২,৫০০+', icon: HiClipboardCheck, color: 'text-blue-500' },
-  { label: 'সক্রিয় শিক্ষার্থী', value: '১৫,০০০+', icon: HiUsers, color: 'text-emerald-500' },
-  { label: 'সম্পূর্ণ পরীক্ষা', value: '৪৫,০০০+', icon: HiFire, color: 'text-orange-500' },
-  { label: 'সাফল্যের হার', value: '৭৮%', icon: HiTrendingUp, color: 'text-purple-500' },
+const studySection = [
+  { id: 1, name: 'Free Hand Writing', icon: '✍️', route: '/study/free-hand-writing', color: 'bg-rose-50 text-rose-600' },
+  { id: 2, name: 'Editorial (Bangla/English)', icon: '📰', route: '/study/editorial', color: 'bg-blue-50 text-blue-600' },
+  { id: 3, name: 'Newspaper Vocabulary', icon: '📖', route: '/study/newspaper-vocabulary', color: 'bg-emerald-50 text-emerald-600' },
+  { id: 4, name: 'Current Affairs', icon: '🌍', route: '/study/current-affairs', color: 'bg-amber-50 text-amber-600' },
+  { id: 5, name: 'Vocabulary', icon: '🔤', route: '/study/vocabulary', color: 'bg-purple-50 text-purple-600' },
+  { id: 6, name: 'বাংলা মুখস্থবিদ্যা', icon: '📚', route: '/study/bangla-mukhosto', color: 'bg-cyan-50 text-cyan-600' },
+  { id: 7, name: 'Translation', icon: '🔁', route: '/study/translation', color: 'bg-pink-50 text-pink-600' },
+  { id: 8, name: 'Translation (Newspaper)', icon: '📄', route: '/study/translation-newspaper', color: 'bg-teal-50 text-teal-600' },
 ]
 
 const toBengaliNumber = (num) => {
@@ -36,49 +35,6 @@ const toBengaliNumber = (num) => {
 
 export default function Home() {
   const navigate = useNavigate()
-  const [sampleMCQ, setSampleMCQ] = useState(null)
-  const [loading, setLoading] = useState(true)
-  const [selectedOption, setSelectedOption] = useState(null)
-  const [showAnswer, setShowAnswer] = useState(false)
-
-  useEffect(() => {
-    fetchMCQs()
-      .then((data) => {
-        const list = Array.isArray(data) ? data : data?.data || data?.questions || []
-        if (list.length > 0) {
-          setSampleMCQ(list[0])
-        }
-      })
-      .catch(() => {
-        setSampleMCQ({
-          question: 'বাংলাদেশের রাজধানী কোন শহর?',
-          options: ['চট্টগ্রাম', 'ঢাকা', 'রাজশাহী', 'খুলনা'],
-          correctAnswer: 1,
-        })
-      })
-      .finally(() => setLoading(false))
-  }, [])
-
-  const handleOptionClick = (index) => {
-    if (showAnswer) return
-    setSelectedOption(index)
-    setShowAnswer(true)
-  }
-
-  const getOptionClass = (index) => {
-    if (!showAnswer) {
-      return selectedOption === index
-        ? 'border-brand-500 bg-brand-50'
-        : 'border-slate-200 hover:border-brand-300 hover:bg-brand-50/50'
-    }
-    if (index === sampleMCQ.correctAnswer) {
-      return 'border-emerald-500 bg-emerald-50'
-    }
-    if (index === selectedOption) {
-      return 'border-red-500 bg-red-50'
-    }
-    return 'border-slate-200 opacity-60'
-  }
 
   return (
     <div className="page-content animate-fade-in">
@@ -264,82 +220,27 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="mb-6">
-        <h2 className="section-title">
-          <HiTrendingUp className="text-brand-500" />
-          পরিসংখ্যান
-        </h2>
-        <div className="grid grid-cols-2 gap-3">
-          {stats.map((stat, idx) => {
-            const Icon = stat.icon
-            return (
-              <div
-                key={stat.label}
-                className="card p-4 animate-slide-up"
-                style={{ animationDelay: `${idx * 80}ms` }}
-              >
-                <Icon className={`text-2xl ${stat.color} mb-2`} />
-                <p className="text-lg font-bold text-slate-800">{stat.value}</p>
-                <p className="text-xs text-slate-400">{stat.label}</p>
-              </div>
-            )
-          })}
-        </div>
-      </section>
-
+      {/* Study Section */}
       <section className="mb-4">
         <h2 className="section-title">
-          <HiClipboardCheck className="text-brand-500" />
-          নমুনা প্রশ্ন
+          <HiBookOpen className="text-brand-500" />
+          Study Section
         </h2>
-        {loading ? (
-          <LoadingSpinner text="প্রশ্ন লোড হচ্ছে..." />
-        ) : sampleMCQ ? (
-          <div className="card p-5 animate-slide-up">
-            <div className="flex items-center gap-2 mb-3">
-              <span className="text-xs font-semibold text-brand-600 bg-brand-50 px-2.5 py-1 rounded-full">
-                নমুনা MCQ
-              </span>
-              <span className="flex items-center gap-1 text-xs text-slate-400">
-                <HiClock /> ৩০ সেকেন্ড
-              </span>
-            </div>
-            <p className="font-semibold text-slate-800 mb-4">{sampleMCQ.question}</p>
-            <div className="space-y-2.5">
-              {(sampleMCQ.options || []).map((opt, idx) => (
-                <button
-                  key={idx}
-                  onClick={() => handleOptionClick(idx)}
-                  className={"w-full text-left p-3 rounded-xl border-2 transition-all duration-200 flex items-center gap-3 " + getOptionClass(idx)}
-                >
-                  <span className={"w-7 h-7 rounded-lg flex items-center justify-center text-sm font-bold " + (showAnswer && idx === sampleMCQ.correctAnswer ? "bg-emerald-500 text-white" : showAnswer && idx === selectedOption ? "bg-red-500 text-white" : "bg-slate-100 text-slate-600")}>
-                    {String.fromCharCode(2465 + idx)}
-                  </span>
-                  <span className="text-sm font-medium text-slate-700">{opt}</span>
-                </button>
-              ))}
-            </div>
-            {showAnswer && (
-              <div className="mt-4 animate-slide-up">
-                {selectedOption === sampleMCQ.correctAnswer ? (
-                  <p className="text-sm text-emerald-600 font-medium bg-emerald-50 p-3 rounded-xl">
-                    সঠিক উত্তর, শাবাশ
-                  </p>
-                ) : (
-                  <p className="text-sm text-red-500 font-medium bg-red-50 p-3 rounded-xl">
-                    ভুল হয়েছে। সঠিক উত্তর: {sampleMCQ.options[sampleMCQ.correctAnswer]}
-                  </p>
-                )}
-                <button
-                  onClick={() => navigate('/mcq')}
-                  className="btn-primary w-full mt-3 text-sm flex items-center justify-center gap-2"
-                >
-                  আরও প্রশ্ন অনুশীলন করুন <HiArrowRight />
-                </button>
+        <div className="grid grid-cols-2 gap-3">
+          {studySection.map((item, idx) => (
+            <div
+              key={item.id}
+              onClick={() => navigate(item.route)}
+              className="card card-hover p-4 cursor-pointer animate-slide-up"
+              style={{ animationDelay: `${idx * 60}ms` }}
+            >
+              <div className={`w-10 h-10 rounded-lg ${item.color} flex items-center justify-center text-xl mb-2`}>
+                {item.icon}
               </div>
-            )}
-          </div>
-        ) : null}
+              <h3 className="font-semibold text-sm text-slate-800 leading-snug">{item.name}</h3>
+            </div>
+          ))}
+        </div>
       </section>
     </div>
   )
