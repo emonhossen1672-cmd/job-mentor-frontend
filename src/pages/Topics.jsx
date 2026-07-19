@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import {
-  fetchTopics, fetchSubtopics, fetchSubtopicMCQs,
+  fetchTopics, fetchSubtopics, fetchSubSubtopics, fetchSubtopicMCQs,
   fetchTopicMCQs, fetchTopicRandomQuiz, fetchSubtopicRandomQuiz,
   toggleTopicLike, toggleSubtopicLike, markQuestionViewed, markQuestionViewedBulk
 } from '../services/api'
@@ -153,13 +153,15 @@ export default function Topics() {
   const { user } = useAuth()
   const uid = user?.uid
 
-  const [view, setView] = useState('categories') // categories | topics | subtopics | questions | quiz
+  const [view, setView] = useState('categories') // categories | topics | subtopics | subsubtopics | questions | quiz
   const [selectedCategory, setSelectedCategory] = useState(null)
   const [topics, setTopics] = useState([])
   const [subtopics, setSubtopics] = useState([])
+  const [subsubtopics, setSubsubtopics] = useState([])
   const [questions, setQuestions] = useState([])
   const [selectedTopic, setSelectedTopic] = useState(null)
   const [selectedSubtopic, setSelectedSubtopic] = useState(null)
+  const [parentSubtopic, setParentSubtopic] = useState(null)
   const [questionsTitle, setQuestionsTitle] = useState('')
   const [loading, setLoading] = useState(false)
 
@@ -182,11 +184,25 @@ export default function Topics() {
 
   async function openTopic(topic) {
     setSelectedTopic(topic)
+    setParentSubtopic(null)
     setLoading(true)
     try {
       const data = await fetchSubtopics(topic.id, uid)
       setSubtopics(data)
       setView('subtopics')
+    } catch (err) {
+      console.error(err)
+    }
+    setLoading(false)
+  }
+
+  async function openSubtopic(sub) {
+    setParentSubtopic(sub)
+    setLoading(true)
+    try {
+      const data = await fetchSubSubtopics(sub.id, uid)
+      setSubsubtopics(data)
+      setView('subsubtopics')
     } catch (err) {
       console.error(err)
     }
@@ -285,6 +301,16 @@ export default function Topics() {
     }
   }
 
+  async function handleSubSubtopicLike(sub) {
+    if (!uid) return
+    try {
+      const result = await toggleSubtopicLike(sub.id, uid)
+      setSubsubtopics((prev) => prev.map((s) => s.id === sub.id ? { ...s, is_liked: result.liked ? 1 : 0, like_count: result.like_count } : s))
+    } catch (err) {
+      console.error(err)
+    }
+  }
+
   function toggleRead(id) {
     setReadIds((prev) => {
       const next = new Set(prev)
@@ -302,8 +328,9 @@ export default function Topics() {
   }
 
   function goBack() {
-    if (view === 'quiz') { setView(selectedSubtopic ? 'subtopics' : 'topics'); setQuestions([]) }
-    else if (view === 'questions') { setView(selectedSubtopic ? 'subtopics' : 'topics'); setQuestions([]); setSelectedSubtopic(null) }
+    if (view === 'quiz') { setView(parentSubtopic ? 'subsubtopics' : (selectedSubtopic ? 'subtopics' : 'topics')); setQuestions([]) }
+    else if (view === 'questions') { setView(parentSubtopic ? 'subsubtopics' : (selectedSubtopic ? 'subtopics' : 'topics')); setQuestions([]); setSelectedSubtopic(null) }
+    else if (view === 'subsubtopics') { setView('subtopics'); setSubsubtopics([]); setParentSubtopic(null) }
     else if (view === 'subtopics') { setView('topics'); setSubtopics([]) }
     else if (view === 'topics') { setView('categories'); setTopics([]); setSelectedCategory(null) }
   }
@@ -400,6 +427,45 @@ export default function Topics() {
                         <HeartButton liked={!!Number(sub.is_liked)} count={sub.like_count || 0} onToggle={() => handleSubtopicLike(sub)} />
                       </div>
                       <div className={`inline-block mt-2 text-xs font-bold px-2.5 py-1 rounded-full ${theme.chip}`}>
+                        সাবটপিক: {sub.subtopic_count} · প্রশ্ন: {sub.question_count}
+                      </div>
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-3 gap-2">
+                    <button onClick={() => openAllSubtopicQuestions(sub, 1)} className="bg-white/80 text-gray-800 text-sm font-bold py-2.5 rounded-xl active:scale-95 transition-transform shadow-sm">
+                      সব প্রশ্ন
+                    </button>
+                    <button onClick={() => openSubtopic(sub)} className="bg-white/80 text-gray-800 text-sm font-bold py-2.5 rounded-xl active:scale-95 transition-transform shadow-sm">
+                      সাবটপিক
+                    </button>
+                    <button onClick={() => openSubtopicRandomQuiz(sub)} className="bg-gray-800 text-white text-sm font-bold py-2.5 rounded-xl active:scale-95 transition-transform shadow-sm">
+                      Random Quiz
+                    </button>
+                  </div>
+                </div>
+              )
+            })}
+            {subtopics.length === 0 && <div className="text-center text-gray-400 py-10 text-lg">কোনো সাবটপিক পাওয়া যায়নি</div>}
+          </div>
+        </div>
+      )}
+
+      {view === 'subsubtopics' && (
+        <div>
+          <h1 className="text-2xl font-extrabold mb-5 text-gray-800">{parentSubtopic?.name}</h1>
+          <div className="space-y-4">
+            {subsubtopics.map((sub, idx) => {
+              const theme = cardThemes[idx % cardThemes.length]
+              return (
+                <div key={sub.id} className="rounded-2xl shadow-md p-4" style={{ background: theme.bg }}>
+                  <div className="flex items-start gap-3 mb-4">
+                    <ProgressRing viewed={sub.viewed_count || 0} total={sub.question_count || 0} color={theme.ring} />
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center justify-between gap-2">
+                        <div className="font-bold text-gray-800 text-base leading-snug">{idx + 1}. {sub.name}</div>
+                        <HeartButton liked={!!Number(sub.is_liked)} count={sub.like_count || 0} onToggle={() => handleSubSubtopicLike(sub)} />
+                      </div>
+                      <div className={`inline-block mt-2 text-xs font-bold px-2.5 py-1 rounded-full ${theme.chip}`}>
                         প্রশ্ন: {sub.question_count}
                       </div>
                     </div>
@@ -415,7 +481,7 @@ export default function Topics() {
                 </div>
               )
             })}
-            {subtopics.length === 0 && <div className="text-center text-gray-400 py-10 text-lg">কোনো সাবটপিক পাওয়া যায়নি</div>}
+            {subsubtopics.length === 0 && <div className="text-center text-gray-400 py-10 text-lg">কোনো সাবটপিক পাওয়া যায়নি</div>}
           </div>
         </div>
       )}
