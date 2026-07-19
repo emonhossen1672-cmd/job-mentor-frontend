@@ -42,9 +42,12 @@ export const fetchMCQs = async () => {
   }
 }
 
-export const fetchTopics = async (category) => {
+export const fetchTopics = async (category, uid) => {
   try {
-    const res = await api.get('/topics', { params: category ? { category } : {} })
+    const params = {}
+    if (category) params.category = category
+    if (uid) params.uid = uid
+    const res = await api.get('/topics', { params })
     return res.data
   } catch (err) {
     console.error('Failed to fetch topics:', err)
@@ -52,9 +55,9 @@ export const fetchTopics = async (category) => {
   }
 }
 
-export const fetchSubtopics = async (topicId) => {
+export const fetchSubtopics = async (topicId, uid) => {
   try {
-    const res = await api.get(`/topics/${topicId}/subtopics`)
+    const res = await api.get(`/topics/${topicId}/subtopics`, { params: uid ? { uid } : {} })
     return res.data
   } catch (err) {
     console.error('Failed to fetch subtopics:', err)
@@ -71,6 +74,65 @@ export const fetchSubtopicMCQs = async (subtopicId) => {
     throw err
   }
 }
+
+export const fetchTopicMCQs = async (topicId) => {
+  try {
+    const res = await api.get(`/topics/${topicId}/mcqs`)
+    return res.data
+  } catch (err) {
+    console.error('Failed to fetch topic mcqs:', err)
+    throw err
+  }
+}
+
+export const fetchTopicRandomQuiz = async (topicId, limit = 20) => {
+  try {
+    const res = await api.get(`/topics/${topicId}/random-quiz`, { params: { limit } })
+    return res.data
+  } catch (err) {
+    console.error('Failed to fetch topic random quiz:', err)
+    throw err
+  }
+}
+
+export const fetchSubtopicRandomQuiz = async (subtopicId, limit = 20) => {
+  try {
+    const res = await api.get(`/subtopics/${subtopicId}/random-quiz`, { params: { limit } })
+    return res.data
+  } catch (err) {
+    console.error('Failed to fetch subtopic random quiz:', err)
+    throw err
+  }
+}
+
+export const toggleTopicLike = async (topicId, uid) => {
+  try {
+    const res = await api.post(`/topics/${topicId}/like`, { uid })
+    return res.data
+  } catch (err) {
+    console.error('Failed to toggle topic like:', err)
+    throw err
+  }
+}
+
+export const toggleSubtopicLike = async (subtopicId, uid) => {
+  try {
+    const res = await api.post(`/subtopics/${subtopicId}/like`, { uid })
+    return res.data
+  } catch (err) {
+    console.error('Failed to toggle subtopic like:', err)
+    throw err
+  }
+}
+
+export const markQuestionViewed = async (mcqId, uid) => {
+  try {
+    await api.post(`/mcqs/${mcqId}/mark-viewed`, { uid })
+  } catch (err) {
+    console.error('Failed to mark viewed:', err)
+  }
+}
+
 export const fetchWrittenQuestions = async (subject) => {
   try {
     const params = subject ? { subject } : {}
