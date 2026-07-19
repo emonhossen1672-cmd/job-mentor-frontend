@@ -5,8 +5,9 @@ import {
   HiClipboardCheck,
   HiDocumentText,
   HiArrowRight,
+  HiClock,
 } from 'react-icons/hi';
-import { fetchMCQs } from '../services/api.js';
+import { fetchLiveUpdates } from '../services/api.js';
 
 const subjects = [
   { id: 1, name: 'বাংলা সাহিত্য', icon: '📖', total: 450, color: 'bg-rose-50 text-rose-600' },
@@ -28,13 +29,39 @@ const studySection = [
   { id: 8, name: 'Translation (Newspaper)', icon: '📄', route: '/study/translation-newspaper', color: 'bg-teal-50 text-teal-600' },
 ]
 
+const categoryLabels = {
+  bcs: 'বিসিএস',
+  primary: 'প্রাইমারি',
+  nibondhon: 'নিবন্ধন',
+  grade_9_20: '৯-২০ গ্রেড',
+}
+
 const toBengaliNumber = (num) => {
   const map = { '0': '০', '1': '১', '2': '২', '3': '৩', '4': '৪', '5': '৫', '6': '৬', '7': '৭', '8': '৮', '9': '৯' }
   return String(num).replace(/[0-9]/g, (d) => map[d])
 }
 
+function formatDateTime(dateStr) {
+  const d = new Date(dateStr)
+  return d.toLocaleString('bn-BD', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })
+}
+
 export default function Home() {
   const navigate = useNavigate()
+  const [liveUpdates, setLiveUpdates] = useState([])
+  const [loadingUpdates, setLoadingUpdates] = useState(true)
+
+  useEffect(() => {
+    fetchLiveUpdates()
+      .then((data) => setLiveUpdates(data))
+      .catch(() => setLiveUpdates([]))
+      .finally(() => setLoadingUpdates(false))
+  }, [])
+
+  function goToExam(item) {
+    if (item.type === 'written') navigate(`/written-model-tests/${item.id}/exam`)
+    else navigate(`/model-tests/${item.id}/exam`)
+  }
 
   return (
     <div className="page-content animate-fade-in">
@@ -91,6 +118,59 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      {/* লাইভ পরীক্ষার আপডেট */}
+      {!loadingUpdates && liveUpdates.length > 0 && (
+        <section className="mb-6">
+          <h2 className="section-title">
+            <span className="live-dot" style={{ display: 'inline-block' }} />
+            লাইভ পরীক্ষার আপডেট
+          </h2>
+          <div className="space-y-3">
+            {liveUpdates.map((item) => (
+              <div
+                key={`${item.type}-${item.id}`}
+                onClick={() => item.status === 'live' && goToExam(item)}
+                className={`card p-4 flex items-center justify-between gap-3 ${item.status === 'live' ? 'cursor-pointer' : ''}`}
+                style={{
+                  borderLeft: `4px solid ${item.status === 'live' ? '#16a34a' : item.status === 'upcoming' ? '#f59e0b' : '#94a3b8'}`,
+                }}
+              >
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 mb-1">
+                    {item.status === 'live' && (
+                      <span className="text-[10px] font-bold text-white bg-green-600 px-2 py-0.5 rounded-full flex items-center gap-1">
+                        <span className="live-dot" /> লাইভ
+                      </span>
+                    )}
+                    {item.status === 'upcoming' && (
+                      <span className="text-[10px] font-bold text-amber-700 bg-amber-100 px-2 py-0.5 rounded-full">
+                        আসন্ন
+                      </span>
+                    )}
+                    {item.status === 'ended' && (
+                      <span className="text-[10px] font-bold text-slate-500 bg-slate-100 px-2 py-0.5 rounded-full">
+                        সমাপ্ত
+                      </span>
+                    )}
+                    <span className="text-[10px] text-slate-400">{categoryLabels[item.category] || item.category}</span>
+                  </div>
+                  <h4 className="text-sm font-bold text-slate-800 truncate">{item.title}</h4>
+                  <div className="flex items-center gap-1 text-[11px] text-slate-400 mt-1">
+                    <HiClock />
+                    {formatDateTime(item.scheduled_at)}
+                  </div>
+                </div>
+                {item.status === 'live' && (
+                  <button className="bg-green-600 text-white text-xs font-bold px-3 py-2 rounded-xl flex-shrink-0">
+                    অংশ নিন
+                  </button>
+                )}
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
 
       {/* প্রিলি / রিটেন — বড় কার্ড */}
       <section className="mb-6">
